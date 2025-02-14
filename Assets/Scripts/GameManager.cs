@@ -6,13 +6,13 @@ public class GameManager : MonoBehaviour
     [Header("Oyun Ayarlari")]
     [SerializeField] private string mainMenuScene = "MainMenu";
     [SerializeField] private string gameScene = "GameScene";
-    
+
     private bool isGameOver = false;
 
     public void EndGame(bool isWin)
     {
         if (isGameOver) return;
-        
+
         isGameOver = true;
         Debug.Log(isWin ? "Oyun Kazanildi!" : "Oyun Kaybedildi!");
         Time.timeScale = 0;

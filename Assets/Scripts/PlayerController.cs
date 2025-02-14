@@ -1,32 +1,33 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Hareket Ayarları")]
     [SerializeField] private float moveSpeed = 5f;
-    
+
     [Header("Oyuncu Özellikleri")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private float woodGatherRadius = 2f;
     [SerializeField] private float woodGatheringRate = 1f;
     [SerializeField] private float treeCuttingRange = 1.5f;
     [SerializeField] private int woodPerTree = 3;
-    
+
     [Header("Ses Efektleri")]
     [SerializeField] private AudioClip walkSound;
     [SerializeField] private AudioClip damageSound;
     [SerializeField] private AudioClip woodGatherSound;
     [SerializeField] private AudioClip torchSound;
     [SerializeField] private AudioClip treeCutSound;
-    
+
     private float currentHealth;
     private int woodCount = 0;
     private bool canGatherWood = true;
     private bool canCutTree = true;
     private float gatherCooldown = 0.5f;
     private float treeCutCooldown = 1f;
-    
+
     private Rigidbody2D rb;
     private Animator animator;
     private Vector2 movement;
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
         torchLight = GetComponentInChildren<Light2D>();
-        
+
         lastMovementDirection = Vector2.down;
         currentHealth = maxHealth;
     }
@@ -54,19 +55,19 @@ public class PlayerController : MonoBehaviour
 
         // Animasyonları güncelle
         UpdateAnimationParameters();
-        
+
         // Odun toplama (E tuşu)
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryGatherWood();
         }
-        
+
         // Ağaç kesme (Space tuşu)
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TryCutTree();
         }
-        
+
         // Meşaleye odun ekleme (F tuşu)
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -86,7 +87,7 @@ public class PlayerController : MonoBehaviour
         {
             // Karakter hareket ediyorsa son hareket yönünü kaydet
             lastMovementDirection = movement;
-            
+
             // Hareket animasyonlarını çalıştır
             animator.SetBool("IsMoving", true);
             animator.SetFloat("DirectionX", movement.x);
@@ -105,10 +106,10 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        
+
         if (audioSource && damageSound)
             audioSource.PlayOneShot(damageSound);
-        
+
         if (currentHealth <= 0)
         {
             Die();
@@ -125,7 +126,7 @@ public class PlayerController : MonoBehaviour
         {
             gameManager.EndGame(false);
         }
-        
+
         // Karakteri devre dışı bırak
         enabled = false;
     }
@@ -152,7 +153,7 @@ public class PlayerController : MonoBehaviour
     {
         canGatherWood = false;
         woodCount++;
-        
+
         if (audioSource && woodGatherSound)
             audioSource.PlayOneShot(woodGatherSound);
         // UI'ı güncelle
@@ -161,9 +162,9 @@ public class PlayerController : MonoBehaviour
         {
             uiManager.UpdateWoodCount(woodCount);
         }
-        
+
         Destroy(woodObject);
-        
+
         // Toplama bekleme süresini başlat
         StartCoroutine(GatherCooldown());
     }
@@ -209,29 +210,69 @@ public class PlayerController : MonoBehaviour
     private IEnumerator CutTree(GameObject tree)
     {
         canCutTree = false;
-        
+
         // Kesme animasyonu
         animator.SetTrigger("Cut");
-        
+
         // Kesme sesi
         if (audioSource && treeCutSound)
         {
             audioSource.PlayOneShot(treeCutSound);
         }
-        
+
         yield return new WaitForSeconds(treeCutCooldown);
-        
+
         // Ağaçtan odun al
         woodCount += woodPerTree;
-        
+
         // Ağacı yok et veya görünümünü değiştir
         tree.GetComponent<Tree>()?.Cut();
-        
+
         canCutTree = true;
     }
 
     private void TryAddWoodToTorch()
     {
-        // Meşaleye odun ekleme işlemi burada yapılabilir
+        if (woodCount <= 0) return;
+
+        // Ana meşaleyi bul
+        var mainTorch = GameObject.FindGameObjectWithTag("MainTorch");
+        if (mainTorch == null) return;
+
+        // Mesafe kontrolü
+        float distance = Vector2.Distance(transform.position, mainTorch.transform.position);
+        if (distance <= 2f) // Etkileşim mesafesi
+        {
+            woodCount--;
+            mainTorch.GetComponent<TorchLightController>()?.AddWood();
+
+            // Ses efekti
+            if (audioSource && torchSound)
+            {
+                audioSource.PlayOneShot(torchSound);
+            }
+
+            // UI güncelle
+            var uiManager = FindAnyObjectByType<UIManager>();
+            if (uiManager != null)
+            {
+                uiManager.UpdateWoodCount(woodCount);
+            }
+        }
+    }
+
+    private void TryGatherWood()
+    {
+        if (!canGatherWood) return;
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, woodGatherRadius);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Wood"))
+            {
+                GatherWood(hitCollider.gameObject);
+                break;
+            }
+        }
     }
 }

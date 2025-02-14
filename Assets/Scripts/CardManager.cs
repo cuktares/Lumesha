@@ -16,9 +16,8 @@ public class CardManager : MonoBehaviour
     [Header("Kart Ayarlari")]
     [SerializeField] private Card[] availableCards;
     [SerializeField] private int cardsToShow = 2;
-    
+
     private UIManager uiManager;
-    
     private bool cardDropsActive = false;
     private List<Card> currentCards = new List<Card>();
 
@@ -58,7 +57,9 @@ public class CardManager : MonoBehaviour
 
     public void SelectCard(int index)
     {
-        // Kart seçim mantığı
+        if (index < 0 || index >= currentCards.Count) return;
+
+        currentCards[index].onCardSelected?.Invoke();
     }
 
     // Örnek kart yetenekleri

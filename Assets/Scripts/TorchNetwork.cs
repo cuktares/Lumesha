@@ -5,7 +5,7 @@ public class TorchNetwork : MonoBehaviour
     [SerializeField] private TorchLightController mainTorch;
     [SerializeField] private TorchLightController[] satelliteTorches;
     [SerializeField] private float networkRadius = 10f;
-    
+
     private void Start()
     {
         if (satelliteTorches.Length != 4)
@@ -13,7 +13,7 @@ public class TorchNetwork : MonoBehaviour
             Debug.LogError("Tam olarak 4 yan meşale gerekli!");
             return;
         }
-        
+
         PositionSatelliteTorches();
     }
 
@@ -27,7 +27,7 @@ public class TorchNetwork : MonoBehaviour
                 Mathf.Sin(angle) * networkRadius,
                 0
             );
-            
+
             satelliteTorches[i].transform.position = position;
         }
     }
@@ -45,4 +45,4 @@ public class TorchNetwork : MonoBehaviour
         }
         return mainTorch.enabled;
     }
-} 
+}

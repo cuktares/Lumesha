@@ -6,11 +6,11 @@ public class TimerManager : MonoBehaviour
     [Header("Zaman Ayarlari")]
     [SerializeField] private float gameDuration = 600f; // 10 dakika
     [SerializeField] private float warningTime = 60f; // Son 1 dakika
-    
+
     [Header("Events")]
     public UnityEvent onTimeUp;
     public UnityEvent onWarningTime;
-    
+
     private float currentTime;
     private bool isWarningTriggered = false;
     private bool isRunning = true;

@@ -6,11 +6,11 @@ public class DarknessManager : MonoBehaviour
     [Header("Karanlık Ayarları")]
     [SerializeField] private float globalDarknessIntensity = 0.8f;
     [SerializeField] private Color darknessColor = Color.black;
-    
+
     [Header("Referanslar")]
     [SerializeField] private Light2D globalLight;
-    [SerializeField] private UnityEngine.Rendering.Universal.Light2D[] excludedLights;
-    
+    [SerializeField] private Light2D[] excludedLights;
+
     private void Start()
     {
         SetupGlobalDarkness();
@@ -25,7 +25,7 @@ public class DarknessManager : MonoBehaviour
 
         globalLight.intensity = 1 - globalDarknessIntensity;
         globalLight.color = darknessColor;
-        
+
         // Diğer ışıkları ayarla
         ConfigureExcludedLights();
     }
@@ -34,7 +34,7 @@ public class DarknessManager : MonoBehaviour
     {
         GameObject lightObj = new GameObject("Global Darkness Light");
         lightObj.transform.parent = transform;
-        
+
         globalLight = lightObj.AddComponent<Light2D>();
         globalLight.lightType = Light2D.LightType.Global;
         globalLight.blendStyle = 0;
