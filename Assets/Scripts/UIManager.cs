@@ -1,106 +1,128 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Genel UI")]
-    [SerializeField] private TextMeshProUGUI woodCountText;
-    [SerializeField] private TextMeshProUGUI waveCountText;
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private Slider torchPowerSlider;
-    
-    [Header("Kart Seçim UI")]
-    [SerializeField] private GameObject cardSelectionPanel;
-    [SerializeField] private GameObject[] cardObjects;
-    [SerializeField] private TextMeshProUGUI[] cardNameTexts;
-    [SerializeField] private TextMeshProUGUI[] cardDescriptionTexts;
-    [SerializeField] private Image[] cardImages;
+    private UIDocument document;
+    private VisualElement root;
+    private VisualElement mainMenu;
+    private VisualElement gameUI;
+    private VisualElement pauseMenu;
+    private VisualElement gameOver;
 
-    [Header("Sonuç Ekranları")]
-    [SerializeField] private GameObject winScreen;
-    [SerializeField] private GameObject loseScreen;
-    [SerializeField] private GameObject pauseMenu;
-    
-    [Header("UI Elementleri")]
-    [SerializeField] private TextMeshProUGUI healthText;
-    
-    private CardManager cardManager;
-    private WaveManager waveManager;
-    private TimerManager timerManager;
+    private Label timerLabel;
+    private Label scoreLabel;
+    private Label woodCounter;
+    private ProgressBar healthBar;
+    private Label finalScore;
 
-    private void Start()
+    private void Awake()
     {
-        cardManager = FindAnyObjectByType<CardManager>();
-        waveManager = FindAnyObjectByType<WaveManager>();
-        timerManager = FindAnyObjectByType<TimerManager>();
-        
-        HideCardSelectionUI();
+        document = GetComponent<UIDocument>();
+        root = document.rootVisualElement;
+
+        // UI elementlerini al
+        mainMenu = root.Q<VisualElement>("main-menu");
+        gameUI = root.Q<VisualElement>("game-ui");
+        pauseMenu = root.Q<VisualElement>("pause-menu");
+        gameOver = root.Q<VisualElement>("game-over");
+
+        timerLabel = root.Q<Label>("timer");
+        scoreLabel = root.Q<Label>("score");
+        woodCounter = root.Q<Label>("wood-counter");
+        healthBar = root.Q<ProgressBar>("health-bar");
+        finalScore = root.Q<Label>("final-score");
+
+        // Buton olaylarını ayarla
+        SetupButtons();
     }
 
-    public void UpdateWoodCount(int count)
+    private void SetupButtons()
     {
-        if (woodCountText != null)
-            woodCountText.text = $"Odun: {count}";
-    }
+        root.Q<Button>("start-button").clicked += StartGame;
+        root.Q<Button>("credits-button").clicked += ShowCredits;
+        root.Q<Button>("quit-button").clicked += QuitGame;
+        root.Q<Button>("resume-button").clicked += ResumeGame;
+        root.Q<Button>("restart-button").clicked += RestartGame;
+        root.Q<Button>("menu-button").clicked += ReturnToMainMenu;
 
-    public void UpdateWaveCount(int wave)
-    {
-        waveCountText.text = $"Dalga: {wave}";
+        root.Q<Slider>("volume-slider").RegisterValueChangedCallback(evt => 
+        {
+            AudioListener.volume = evt.newValue;
+        });
     }
 
     public void UpdateTimer(float time)
     {
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time % 60);
-        timerText.text = $"{minutes:00}:{seconds:00}";
+        timerLabel.text = $"Süre: {minutes:00}:{seconds:00}";
     }
 
-    public void UpdateTorchPower(float current, float max)
+    public void UpdateScore(int score)
     {
-        torchPowerSlider.value = current / max;
+        scoreLabel.text = $"Skor: {score}";
     }
 
-    public void UpdateHealth(float health)
+    public void UpdateWoodCount(int count)
     {
-        if (healthText != null)
-            healthText.text = $"Can: {health:0}";
+        woodCounter.text = $"Odun: {count}";
     }
 
-    public void ShowCardSelectionUI(CardManager.Card[] cards)
+    public void UpdateHealth(float current, float max)
     {
-        cardSelectionPanel.SetActive(true);
-        Time.timeScale = 0f; // Oyunu durdur
-
-        for (int i = 0; i < cardObjects.Length; i++)
-        {
-            if (i < cards.Length)
-            {
-                cardObjects[i].SetActive(true);
-                cardNameTexts[i].text = cards[i].cardName;
-                cardDescriptionTexts[i].text = cards[i].description;
-                cardImages[i].sprite = cards[i].cardImage;
-            }
-            else
-            {
-                cardObjects[i].SetActive(false);
-            }
-        }
+        healthBar.value = current / max * 100;
     }
 
-    public void HideCardSelectionUI()
+    private void ShowMainMenu()
     {
-        cardSelectionPanel.SetActive(false);
-        Time.timeScale = 1f; // Oyunu devam ettir
+        mainMenu.style.display = DisplayStyle.Flex;
+        gameUI.style.display = DisplayStyle.None;
+        pauseMenu.style.display = DisplayStyle.None;
+        gameOver.style.display = DisplayStyle.None;
     }
 
-    public void OnCardSelected(int index)
+    private void StartGame()
     {
-        cardManager.SelectCard(index);
+        mainMenu.style.display = DisplayStyle.None;
+        gameUI.style.display = DisplayStyle.Flex;
+        Time.timeScale = 1f;
     }
 
-    public void ShowWinScreen() => winScreen?.SetActive(true);
-    public void ShowLoseScreen() => loseScreen?.SetActive(true);
-    public void ShowPauseMenu() => pauseMenu?.SetActive(true);
-    public void HidePauseMenu() => pauseMenu?.SetActive(false);
+    private void ShowCredits()
+    {
+        // Kredi ekranını göster
+    }
+
+    private void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    private void ResumeGame()
+    {
+        pauseMenu.style.display = DisplayStyle.None;
+        Time.timeScale = 1f;
+    }
+
+    private void RestartGame()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+        );
+    }
+
+    private void ReturnToMainMenu()
+    {
+        ShowMainMenu();
+        Time.timeScale = 0f;
+    }
+
+    public void ShowGameOver(int finalScoreValue)
+    {
+        gameOver.style.display = DisplayStyle.Flex;
+        gameUI.style.display = DisplayStyle.None;
+        finalScore.text = $"Final Skor: {finalScoreValue}";
+        Time.timeScale = 0f;
+    }
 }

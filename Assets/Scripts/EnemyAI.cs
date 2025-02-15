@@ -31,6 +31,10 @@ public class EnemyAI : MonoBehaviour
     private bool isDead = false;
     private float slowEffectMultiplier = 1f;
 
+    [Header("Merdiven Ayarları")]
+    [SerializeField] private float climbSpeed = 2f;
+    private bool isOnLadder = false;
+
     private void Awake()
     {
         Debug.Log("Enemy Awake çağrıldı");
@@ -194,7 +198,7 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         CheckLightStatus();
-        // ... diğer update kodları ...
+        HandleLadderMovement();
     }
 
     private void CheckLightStatus()
@@ -226,6 +230,44 @@ public class EnemyAI : MonoBehaviour
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.linearVelocity = direction * currentSpeed;
+        }
+    }
+
+    private void HandleLadderMovement()
+    {
+        if (isOnLadder && player != null)
+        {
+            // Hedefin yüksekliğine göre tırmanma
+            float heightDifference = player.position.y - transform.position.y;
+            
+            if (Mathf.Abs(heightDifference) > 0.1f)
+            {
+                float verticalMovement = Mathf.Sign(heightDifference) * climbSpeed;
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, verticalMovement);
+                rb.gravityScale = 0f;
+            }
+        }
+        else
+        {
+            rb.gravityScale = 1f;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            isOnLadder = true;
+            Debug.Log("Düşman merdivene girdi");
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            isOnLadder = false;
+            Debug.Log("Düşman merdivenden çıktı");
         }
     }
 }

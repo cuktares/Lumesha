@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements">
+
+    <engine:VisualElement name="root" class="main-container">
+        <!-- Ana Menü -->
+        <engine:VisualElement name="main-menu" style="display: none;">
+            <engine:Button name="start-button" class="menu-button" text="Oyunu Başlat"/>
+            <engine:Button name="credits-button" class="menu-button" text="Krediler"/>
+            <engine:Button name="quit-button" class="menu-button" text="Çıkış"/>
+            <engine:Slider name="volume-slider" class="volume-slider"/>
+        </engine:VisualElement>
+
+        <!-- Oyun İçi UI -->
+        <engine:VisualElement name="game-ui">
+            <engine:Label name="timer" class="timer"/>
+            <engine:Label name="score" class="score-text"/>
+            <engine:ProgressBar name="health-bar" class="health-bar"/>
+            <engine:Label name="wood-counter" class="wood-counter"/>
+        </engine:VisualElement>
+
+        <!-- Pause Menü -->
+        <engine:VisualElement name="pause-menu" style="display: none;">
+            <engine:Button name="resume-button" class="menu-button" text="Devam Et"/>
+            <engine:Button name="restart-button" class="menu-button" text="Yeniden Başlat"/>
+            <engine:Button name="menu-button" class="menu-button" text="Ana Menü"/>
+        </engine:VisualElement>
+
+        <!-- Game Over -->
+        <engine:VisualElement name="game-over" style="display: none;">
+            <engine:Label name="final-score" class="score-text"/>
+            <engine:Button name="restart-button" class="menu-button" text="Tekrar Dene"/>
+            <engine:Button name="menu-button" class="menu-button" text="Ana Menü"/>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML> 

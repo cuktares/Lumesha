@@ -4,8 +4,13 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Hareket Ayarlari")]
-    [SerializeField] private float moveSpeed = 5f;
+    [Header("Hareket Ayarları")]
+    [SerializeField] private float normalSpeed = 5f;
+    [SerializeField] private float darkSlowdownSpeed = 2.5f;
+    
+    [Header("Meşale Güçlendirme")]
+    [SerializeField] private KeyCode powerUpTorchKey = KeyCode.F;
+    [SerializeField] private float torchCheckRadius = 2f;
 
     [Header("Oyuncu Özellikleri")]
     [SerializeField] private float maxHealth = 100f;
@@ -21,15 +26,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip torchSound;
     [SerializeField] private AudioClip treeCutSound;
 
-    [Header("Meşale Güçlendirme")]
-    [SerializeField] private KeyCode powerUpTorchKey = KeyCode.F;
-    [SerializeField] private float torchCheckRadius = 2f;
+    [Header("Merdiven Ayarları")]
+    [SerializeField] private float climbSpeed = 3f;
+    private bool isOnLadder = false;
 
-    [Header("Işık Etkisi Ayarları")]
-    [SerializeField] private float normalSpeed = 5f;
-    [SerializeField] private float darkSlowdownSpeed = 2.5f; // Karanlıktaki hız
-    [SerializeField] private LayerMask torchLightLayer; // Meşale ışığı layer'ı
-
+    private bool isOnStairs = false;
+    private Rigidbody2D rb;
     private float currentHealth;
     private int woodCount = 0;
     public int WoodCount => woodCount; // Dışarıdan okuma için property
@@ -38,7 +40,6 @@ public class PlayerController : MonoBehaviour
     private float gatherCooldown = 0.5f;
     private float treeCutCooldown = 1f;
 
-    private Rigidbody2D rb;
     private Animator animator;
     private AudioSource audioSource;
     private Light2D torchLight;
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviour
 
     private float currentSpeed;
     private bool isInLight = false;
+    private UIManager uiManager;
 
     private void Start()
     {
@@ -54,19 +56,13 @@ public class PlayerController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         torchLight = GetComponentInChildren<Light2D>();
         currentHealth = maxHealth;
+        uiManager = FindAnyObjectByType<UIManager>();
     }
 
     private void Update()
     {
         CheckLightStatus();
-        // Hareket inputları ve animasyon
         HandleMovementAndAnimation();
-
-        // Odun toplama (E tuşu)
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            TryGatherWood();
-        }
 
         // Ağaç kesme (Space tuşu)
         if (Input.GetKeyDown(KeyCode.Space))
@@ -79,8 +75,10 @@ public class PlayerController : MonoBehaviour
         {
             UseAllWoodsForTorch();
         }
-    }
 
+        HandleLadderMovement();
+    }
+        
     private void CheckLightStatus()
     {
         // Tüm meşaleleri bul
@@ -186,7 +184,7 @@ public class PlayerController : MonoBehaviour
 
     public void IncreaseMoveSpeed(float multiplier)
     {
-        moveSpeed *= multiplier;
+        normalSpeed *= multiplier;
     }
 
     public void IncreaseWoodGatheringRate(float multiplier)
@@ -212,7 +210,6 @@ public class PlayerController : MonoBehaviour
         if (audioSource && woodGatherSound)
             audioSource.PlayOneShot(woodGatherSound);
         // UI'ı güncelle
-        var uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
             uiManager.UpdateWoodCount(woodCount);
@@ -236,7 +233,6 @@ public class PlayerController : MonoBehaviour
         if (woodCount >= amount)
         {
             woodCount -= amount;
-            var uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.UpdateWoodCount(woodCount);
@@ -354,10 +350,42 @@ public class PlayerController : MonoBehaviour
         }
 
         // UI güncelle
-        var uiManager = FindAnyObjectByType<UIManager>();
         if (uiManager != null)
         {
             uiManager.UpdateWoodCount(woodCount);
+        }
+    }
+
+    private void HandleLadderMovement()
+    {
+        if (isOnLadder)
+        {
+            // Merdivende dikey hareket
+            float verticalInput = Input.GetAxisRaw("Vertical");
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, verticalInput * climbSpeed);
+            rb.gravityScale = 0f; // Merdivende yerçekimini kapat
+        }
+        else
+        {
+            rb.gravityScale = 1f; // Normal yerçekimi
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            isOnLadder = true;
+            Debug.Log("Merdivene girildi");
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Ladder"))
+        {
+            isOnLadder = false;
+            Debug.Log("Merdivenden çıkıldı");
         }
     }
 }

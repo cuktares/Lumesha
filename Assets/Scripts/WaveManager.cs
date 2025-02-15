@@ -18,9 +18,6 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private float timeBetweenWaves = 5f;
 
-    [Header("Referanslar")]
-    [SerializeField] private CardManager cardManager;
-
     private int currentWaveIndex = 0;
     private bool isSpawning = false;
 
@@ -36,16 +33,8 @@ public class WaveManager : MonoBehaviour
         while (currentWaveIndex < waves.Length)
         {
             yield return StartCoroutine(SpawnWave(waves[currentWaveIndex]));
-
             yield return new WaitForSeconds(timeBetweenWaves);
-
             currentWaveIndex++;
-
-            // 2. dalgadan sonra kart düşürme sistemini aktifleştir
-            if (currentWaveIndex >= 2 && cardManager != null)
-            {
-                cardManager.ActivateCardDrops();
-            }
         }
     }
 
