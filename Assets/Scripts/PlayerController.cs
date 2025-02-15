@@ -214,9 +214,16 @@ public class PlayerController : MonoBehaviour
         Vector2 cutDirection = lastMovementDirection;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, cutDirection, treeCuttingRange, LayerMask.GetMask("Tree"));
 
+        Debug.Log($"Ağaç kesme denemesi - Yön: {cutDirection}, Menzil: {treeCuttingRange}");
+
         if (hit.collider != null && hit.collider.CompareTag("Tree"))
         {
+            Debug.Log($"Ağaç bulundu! Mesafe: {hit.distance}");
             StartCoroutine(CutTree(hit.collider.gameObject));
+        }
+        else
+        {
+            Debug.Log("Menzilde ağaç bulunamadı!");
         }
     }
 
@@ -292,6 +299,25 @@ public class PlayerController : MonoBehaviour
                 GatherWood(hitCollider.gameObject);
                 break;
             }
+        }
+    }
+
+    public void CollectWood()
+    {
+        woodCount++;
+        Debug.Log($"Odun toplandı! Toplam odun: {woodCount}");
+
+        // Ses efekti
+        if (audioSource && woodGatherSound)
+        {
+            audioSource.PlayOneShot(woodGatherSound);
+        }
+
+        // UI güncelle
+        var uiManager = FindAnyObjectByType<UIManager>();
+        if (uiManager != null)
+        {
+            uiManager.UpdateWoodCount(woodCount);
         }
     }
 }

@@ -37,7 +37,7 @@ public class EnemyAI : MonoBehaviour
         Debug.Log($"Player aranıyor... Tag ile bulunan obje: {(player != null ? player.name : "Bulunamadı")}");
 
         // Alternatif arama yöntemi
-        var allPlayers = GameObject.FindObjectsOfType<PlayerController>();
+        var allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         Debug.Log($"Sahnede bulunan PlayerController sayısı: {allPlayers.Length}");
         UpdateNearestTorch();
     }
