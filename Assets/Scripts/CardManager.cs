@@ -63,6 +63,7 @@ public class CardManager : MonoBehaviour
     }
 
     // Örnek kart yetenekleri
+    [System.Obsolete]
     public void IncreasePlayerSpeed()
     {
         PlayerController player = FindObjectOfType<PlayerController>();
@@ -72,6 +73,7 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     public void IncreaseTorchPower()
     {
         TorchLightController[] torches = FindObjectsOfType<TorchLightController>();
@@ -82,6 +84,7 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     public void IncreaseWoodGatheringRate()
     {
         PlayerController player = FindObjectOfType<PlayerController>();

@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class Tree : MonoBehaviour
 {
-    [SerializeField] private Sprite cutTreeSprite; // Kesildikten sonraki görünüm
-    [SerializeField] private GameObject woodPrefab; // Düşecek odun prefabı
-    [SerializeField] private int maxHealth = 3; // Kaç vuruşta kesileceği
+    [SerializeField] private GameObject cutTreeSprite; // Kesilmis agac sprite'i
+    [SerializeField] private GameObject woodPrefab; // Dusecek odun prefabi
+    [SerializeField] private int maxHealth = 3; // Kaç vurusta kesilecegi
+    [SerializeField] private int woodSpawnCount = 3;
 
     private int currentHealth;
     private SpriteRenderer spriteRenderer;
@@ -30,24 +31,23 @@ public class Tree : MonoBehaviour
 
     public void Cut()
     {
-        // Görünümü değiştir
+        // Kesilmiş ağaç görünümünü aktifleştir
         if (cutTreeSprite != null)
         {
-            spriteRenderer.sprite = cutTreeSprite;
+            cutTreeSprite.SetActive(true);
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
         }
 
-        // Odun düşür
-        if (woodPrefab != null)
+        // Odun oluştur
+        for (int i = 0; i < woodSpawnCount; i++)
         {
-            Vector2 dropPosition = transform.position;
-            Instantiate(woodPrefab, dropPosition, Quaternion.identity);
+            Vector2 randomOffset = Random.insideUnitCircle * 0.5f;
+            Vector3 spawnPosition = transform.position + new Vector3(randomOffset.x, randomOffset.y, 0);
+            Instantiate(woodPrefab, spawnPosition, Quaternion.identity);
         }
-
-        // Collider'ı kaldır
+        
         GetComponent<Collider2D>().enabled = false;
-
-        // Script'i devre dışı bırak
-        enabled = false;
+        Destroy(gameObject, 2f); // 2 saniye sonra yok et
     }
 
     private System.Collections.IEnumerator DamageEffect()

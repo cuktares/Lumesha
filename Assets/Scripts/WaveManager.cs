@@ -13,7 +13,7 @@ public class WaveManager : MonoBehaviour
         public float waveDuration;
     }
 
-    [Header("Dalga Ayarları")]
+    [Header("Dalga Ayarlari")]
     [SerializeField] private Wave[] waves;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private float timeBetweenWaves = 5f;

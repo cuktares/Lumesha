@@ -3,7 +3,7 @@ using UnityEngine.Rendering.Universal;
 
 public class DarknessManager : MonoBehaviour
 {
-    [Header("Karanlık Ayarları")]
+    [Header("Karanlik Ayarlari")]
     [SerializeField] private float globalDarknessIntensity = 0.8f;
     [SerializeField] private Color darknessColor = Color.black;
 
@@ -37,7 +37,7 @@ public class DarknessManager : MonoBehaviour
 
         globalLight = lightObj.AddComponent<Light2D>();
         globalLight.lightType = Light2D.LightType.Global;
-        globalLight.blendStyle = 0;
+        globalLight.blendStyleIndex = 0;
     }
 
     private void ConfigureExcludedLights()
@@ -49,8 +49,8 @@ public class DarknessManager : MonoBehaviour
             if (light != null)
             {
                 // Bu ışıkların global karanlıktan etkilenmemesini sağla
-                light.useNormalMap = true;
-                light.renderingLayerMask = 1;
+                // light.useNormalMap = true; // simdilik off
+                light.lightCookieSprite = null;
             }
         }
     }
@@ -75,8 +75,8 @@ public class DarknessManager : MonoBehaviour
         excludedLights = newLights;
 
         // Yeni ışığı yapılandır
-        light.useNormalMap = true;
-        light.renderingLayerMask = 1;
+        // light.useNormalMap = true; // simdilik bos
+        // light.renderingLayerMask = 1; // simdilik bosy
     }
 
     public void RemoveExcludedLight(Light2D light)

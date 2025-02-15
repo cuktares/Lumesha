@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using System.Collections;
+using System;
 
 public class TorchLightController : MonoBehaviour
 {
-    [Header("Işık Ayarları")]
+    [Header("Isik Ayarlari")]
     [SerializeField] private float maxLightRadius = 10f;
     [SerializeField] private float minLightRadius = 2f;
     [SerializeField] private float lightDecreaseRate = 0.1f;
@@ -12,18 +13,28 @@ public class TorchLightController : MonoBehaviour
     [SerializeField] private bool isMainTorch = false;
     [SerializeField] private float mainTorchRange = 15f; // Ana meşalenin etki alanı
 
-    [Header("Düşman Etkileri")]
+    [Header("Dusman Etkileri")]
     [SerializeField] private float enemySlowRate = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Meşale Sprite Ayarları")]
+    [SerializeField] private Sprite normalTorchSprite;
+    [SerializeField] private Sprite powerfulTorchSprite;
+    [SerializeField] private float spriteTransitionThreshold = 0.7f;
+    [SerializeField] private float flickerIntensity = 0.1f;
+    [SerializeField] private float flickerSpeed = 10f;
 
     private Light2D torchLight;
     private float currentHealth;
     private float currentLightRadius;
     private Transform mainTorch;
+    private SpriteRenderer torchSprite;
+    private bool isPowerfulMode = false;
 
     private void Start()
     {
         torchLight = GetComponent<Light2D>();
+        torchSprite = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;
         currentLightRadius = isMainTorch ? maxLightRadius : minLightRadius;
         torchLight.pointLightOuterRadius = currentLightRadius;
@@ -43,8 +54,8 @@ public class TorchLightController : MonoBehaviour
     {
         if (isMainTorch)
         {
-            // Ana meşale sürekli azalır
             DecreaseLightRadius();
+            UpdateTorchSprite();
         }
         else
         {
@@ -54,6 +65,7 @@ public class TorchLightController : MonoBehaviour
 
         // Işık alanındaki düşmanları yavaşlat
         SlowEnemiesInRange();
+        FlickerEffect();
     }
 
     private void DecreaseLightRadius()
@@ -90,12 +102,12 @@ public class TorchLightController : MonoBehaviour
             currentLightRadius, enemyLayer);
 
         foreach (Collider2D enemy in enemies)
-        {
-            var enemyAI = enemy.GetComponent<EnemyAI>();
-            if (enemyAI != null)
-            {
+       {
+          var enemyAI = enemy.GetComponent<EnemyAI>();
+         if (enemyAI != null)
+           {
                 enemyAI.SetSlowEffect(enemySlowRate);
-            }
+           }
         }
     }
 
@@ -129,11 +141,38 @@ public class TorchLightController : MonoBehaviour
         {
             currentLightRadius = Mathf.Min(maxLightRadius, currentLightRadius + 2f);
             torchLight.pointLightOuterRadius = currentLightRadius;
+            
+            // Odun eklendiğinde sprite'ı hemen güncelle
+            UpdateTorchSprite();
         }
     }
 
     public float GetLightRatio()
     {
         return (currentLightRadius - minLightRadius) / (maxLightRadius - minLightRadius);
+    }
+
+    private void UpdateTorchSprite()
+    {
+        float lightRatio = GetLightRatio();
+        bool shouldBePowerful = lightRatio >= spriteTransitionThreshold;
+
+        if (shouldBePowerful != isPowerfulMode)
+        {
+            isPowerfulMode = shouldBePowerful;
+            torchSprite.sprite = isPowerfulMode ? powerfulTorchSprite : normalTorchSprite;
+        }
+    }
+
+    private void FlickerEffect()
+    {
+        // Rastgele titreşim efekti
+        float flicker = 1f + Mathf.Sin(Time.time * flickerSpeed) * flickerIntensity;
+        torchSprite.transform.localScale = Vector3.one * flicker;
+    }
+
+    internal void SetActive(bool v)
+    {
+        throw new NotImplementedException();
     }
 }

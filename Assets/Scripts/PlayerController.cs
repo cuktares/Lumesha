@@ -4,7 +4,7 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Hareket Ayarları")]
+    [Header("Hareket Ayarlari")]
     [SerializeField] private float moveSpeed = 5f;
 
     [Header("Oyuncu Özellikleri")]
@@ -30,10 +30,9 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
-    private Vector2 movement;
-    private Vector2 lastMovementDirection;
     private AudioSource audioSource;
     private Light2D torchLight;
+    private Vector2 lastMovementDirection = Vector2.down;
 
     private void Start()
     {
@@ -41,20 +40,14 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
         torchLight = GetComponentInChildren<Light2D>();
-
-        lastMovementDirection = Vector2.down;
         currentHealth = maxHealth;
     }
 
+    [System.Obsolete]
     private void Update()
     {
-        // Hareket inputları
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
-        movement = movement.normalized;
-
-        // Animasyonları güncelle
-        UpdateAnimationParameters();
+        // Hareket inputları ve animasyon
+        HandleMovementAndAnimation();
 
         // Odun toplama (E tuşu)
         if (Input.GetKeyDown(KeyCode.E))
@@ -75,34 +68,48 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void HandleMovementAndAnimation()
     {
-        // Karakteri hareket ettir
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        Vector2 dir = Vector2.zero;
+
+        // Yatay hareket (A/D veya Sol/Sağ Ok)
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        {
+            dir.x = -1;
+            animator.SetInteger("Direction", 3); // Sol
+        }
+        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        {
+            dir.x = 1;
+            animator.SetInteger("Direction", 2); // Sağ
+        }
+
+        // Dikey hareket (W/S veya Yukarı/Aşağı Ok)
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+        {
+            dir.y = 1;
+            animator.SetInteger("Direction", 1); // Yukarı
+        }
+        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+        {
+            dir.y = -1;
+            animator.SetInteger("Direction", 0); // Aşağı
+        }
+        dir.Normalize();
+        animator.SetBool("IsMoving", dir.magnitude > 0);
+
+        // Son hareket yönünü kaydet
+        if (dir != Vector2.zero)
+        {
+            lastMovementDirection = dir;
+        }
+
+        // Hareketi uygula
+        rb.linearVelocity = dir * moveSpeed;
+        rb.linearVelocity = dir * moveSpeed;
     }
 
-    private void UpdateAnimationParameters()
-    {
-        if (movement != Vector2.zero)
-        {
-            // Karakter hareket ediyorsa son hareket yönünü kaydet
-            lastMovementDirection = movement;
-
-            // Hareket animasyonlarını çalıştır
-            animator.SetBool("IsMoving", true);
-            animator.SetFloat("DirectionX", movement.x);
-            animator.SetFloat("DirectionY", movement.y);
-        }
-        else
-        {
-            // Karakter durunca idle animasyonuna geç
-            animator.SetBool("IsMoving", false);
-            // Son hareket yönünü idle animasyonu için kullan
-            animator.SetFloat("DirectionX", lastMovementDirection.x);
-            animator.SetFloat("DirectionY", lastMovementDirection.y);
-        }
-    }
-
+    [System.Obsolete]
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
@@ -116,12 +123,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     private void Die()
     {
         // Ölüm animasyonu
-        animator.SetTrigger("Die");
-        // GameManager'ı bilgilendir
-        var gameManager = FindAnyObjectByType<GameManager>();
+        if (animator.HasParameter("Die"))
+        {
+            animator.SetTrigger("Die");
+            
+        }
+        // GameManager'i bilgilendir
+        var gameManager = FindObjectOfType<GameManager>();
         if (gameManager != null)
         {
             gameManager.EndGame(false);
@@ -141,6 +153,7 @@ public class PlayerController : MonoBehaviour
         woodGatheringRate *= multiplier;
     }
 
+    [System.Obsolete]
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("Wood") && canGatherWood)
@@ -149,6 +162,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     private void GatherWood(GameObject woodObject)
     {
         canGatherWood = false;
@@ -157,7 +171,7 @@ public class PlayerController : MonoBehaviour
         if (audioSource && woodGatherSound)
             audioSource.PlayOneShot(woodGatherSound);
         // UI'ı güncelle
-        var uiManager = FindAnyObjectByType<UIManager>();
+        var uiManager = FindObjectOfType<UIManager>();
         if (uiManager != null)
         {
             uiManager.UpdateWoodCount(woodCount);
@@ -180,12 +194,13 @@ public class PlayerController : MonoBehaviour
         return woodCount;
     }
 
+    [System.Obsolete]
     public void UseWood(int amount)
     {
         if (woodCount >= amount)
         {
             woodCount -= amount;
-            var uiManager = FindAnyObjectByType<UIManager>();
+            var uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.UpdateWoodCount(woodCount);
@@ -226,11 +241,16 @@ public class PlayerController : MonoBehaviour
         woodCount += woodPerTree;
 
         // Ağacı yok et veya görünümünü değiştir
-        tree.GetComponent<Tree>()?.Cut();
+        var treeComponent = tree.GetComponent<Tree>();
+        if (treeComponent != null)
+        {
+            treeComponent.Cut();
+        }
 
         canCutTree = true;
     }
 
+    [System.Obsolete]
     private void TryAddWoodToTorch()
     {
         if (woodCount <= 0) return;
@@ -253,7 +273,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // UI güncelle
-            var uiManager = FindAnyObjectByType<UIManager>();
+            var uiManager = FindObjectOfType<UIManager>();
             if (uiManager != null)
             {
                 uiManager.UpdateWoodCount(woodCount);
@@ -261,6 +281,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     private void TryGatherWood()
     {
         if (!canGatherWood) return;
@@ -274,5 +295,21 @@ public class PlayerController : MonoBehaviour
                 break;
             }
         }
+    }
+}
+
+// Extension method to check if Animator has a parameter
+public static class AnimatorExtensions
+{
+    public static bool HasParameter(this Animator animator, string paramName)
+    {
+        foreach (AnimatorControllerParameter param in animator.parameters)
+        {
+            if (param.name == paramName)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

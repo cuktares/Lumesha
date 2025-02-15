@@ -16,6 +16,7 @@ public class TimerManager : MonoBehaviour
     private bool isRunning = true;
     private UIManager uiManager;
 
+    [System.Obsolete]
     private void Start()
     {
         currentTime = gameDuration;

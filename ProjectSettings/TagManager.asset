@@ -2,17 +2,22 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Enemy
+  - MainTorch
+  - Wood
+  - Torch
+  - Tree
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - torch
   - Water
   - UI
-  - 
-  - 
+  - Enemy
+  - Tree
   - 
   - 
   - 
@@ -41,12 +46,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Layer 3
+    uniqueID: 4189426099
+    locked: 0
   - name: Layer 1
     uniqueID: 2425651459
     locked: 0
   - name: Layer 2
     uniqueID: 4250941897
     locked: 0
-  - name: Layer 3
-    uniqueID: 4189426099
+  - name: torch
+    uniqueID: 3238665503
     locked: 0
+  m_RenderingLayers:
+  - Default

@@ -31,6 +31,7 @@ public class EnemyAI : MonoBehaviour
         UpdateNearestTorch();
     }
 
+    [System.Obsolete]
     private void Update()
     {
         if (isDead) return;
@@ -80,6 +81,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     private void TryAttack()
     {
         if (Time.time < nextAttackTime) return;
@@ -94,7 +96,11 @@ public class EnemyAI : MonoBehaviour
                  Vector2.Distance(transform.position, nearestTorch.position) <= attackRange)
         {
             // Meşaleye saldır
-            nearestTorch.GetComponent<TorchLightController>()?.SetActive(false);
+            var torchController = nearestTorch.GetComponent<TorchLightController>();
+            if (torchController != null)
+            {
+                torchController.enabled = false; // Meşaleyi devre dışı bırak
+            }
             nextAttackTime = Time.time + attackCooldown;
         }
     }
