@@ -10,7 +10,7 @@ public class TorchLightController : MonoBehaviour
     [SerializeField] private float minLightRadius = 2f;
     [SerializeField] private float lightDecreaseRate = 0.1f;
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private bool isMainTorch = false;
+    [SerializeField] public bool isMainTorch = false;
     [SerializeField] private float mainTorchRange = 15f; // Ana meşalenin etki alanı
 
     [Header("Dusman Etkileri")]
@@ -20,6 +20,9 @@ public class TorchLightController : MonoBehaviour
     [Header("Meşale Sprite Ayarları")]
     [SerializeField] private Sprite normalTorchSprite;
     [SerializeField] private Sprite powerfulTorchSprite;
+
+
+    [Header("Meşale Animasyon Ayarları")]
     [SerializeField] private float spriteTransitionThreshold = 0.7f;
     [SerializeField] private float flickerIntensity = 0.1f;
     [SerializeField] private float flickerSpeed = 10f;
@@ -29,12 +32,14 @@ public class TorchLightController : MonoBehaviour
     private float currentLightRadius;
     private Transform mainTorch;
     private SpriteRenderer torchSprite;
+    private Animator animator;
     private bool isPowerfulMode = false;
 
     private void Start()
     {
         torchLight = GetComponent<Light2D>();
         torchSprite = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
         currentLightRadius = isMainTorch ? maxLightRadius : minLightRadius;
         torchLight.pointLightOuterRadius = currentLightRadius;
@@ -55,7 +60,7 @@ public class TorchLightController : MonoBehaviour
         if (isMainTorch)
         {
             DecreaseLightRadius();
-            UpdateTorchSprite();
+            UpdateTorchAnimation();
         }
         else
         {
@@ -65,7 +70,6 @@ public class TorchLightController : MonoBehaviour
 
         // Işık alanındaki düşmanları yavaşlat
         SlowEnemiesInRange();
-        FlickerEffect();
     }
 
     private void DecreaseLightRadius()
@@ -142,8 +146,8 @@ public class TorchLightController : MonoBehaviour
             currentLightRadius = Mathf.Min(maxLightRadius, currentLightRadius + 2f);
             torchLight.pointLightOuterRadius = currentLightRadius;
             
-            // Odun eklendiğinde sprite'ı hemen güncelle
-            UpdateTorchSprite();
+            // Odun eklendiğinde animasyonu hemen güncelle
+            UpdateTorchAnimation();
         }
     }
 
@@ -152,7 +156,7 @@ public class TorchLightController : MonoBehaviour
         return (currentLightRadius - minLightRadius) / (maxLightRadius - minLightRadius);
     }
 
-    private void UpdateTorchSprite()
+    private void UpdateTorchAnimation()
     {
         float lightRatio = GetLightRatio();
         bool shouldBePowerful = lightRatio >= spriteTransitionThreshold;
@@ -160,15 +164,8 @@ public class TorchLightController : MonoBehaviour
         if (shouldBePowerful != isPowerfulMode)
         {
             isPowerfulMode = shouldBePowerful;
-            torchSprite.sprite = isPowerfulMode ? powerfulTorchSprite : normalTorchSprite;
+            animator.SetBool("IsPowerful", isPowerfulMode);
         }
-    }
-
-    private void FlickerEffect()
-    {
-        // Rastgele titreşim efekti
-        float flicker = 1f + Mathf.Sin(Time.time * flickerSpeed) * flickerIntensity;
-        torchSprite.transform.localScale = Vector3.one * flicker;
     }
 
     internal void SetActive(bool v)

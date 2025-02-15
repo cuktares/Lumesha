@@ -109,7 +109,6 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = dir * moveSpeed;
     }
 
-    [System.Obsolete]
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
@@ -123,17 +122,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    [System.Obsolete]
     private void Die()
     {
         // Ölüm animasyonu
         if (animator.HasParameter("Die"))
         {
             animator.SetTrigger("Die");
-            
         }
+        
         // GameManager'i bilgilendir
-        var gameManager = FindObjectOfType<GameManager>();
+        var gameManager = FindAnyObjectByType<GameManager>();
         if (gameManager != null)
         {
             gameManager.EndGame(false);

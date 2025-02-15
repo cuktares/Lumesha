@@ -24,10 +24,16 @@ public class EnemyAI : MonoBehaviour
     private float baseSpeed = 5f;
     private float currentSpeedMultiplier = 1f;
 
+    private float randomDirectionTimer = 0f;
+    private Vector2 randomDirection;
+    [SerializeField] private float randomMoveInterval = 2f; // Ne sıklıkla yön değiştireceği
+    [SerializeField] private float randomMoveSpeed = 2f; // Random hareketin hızı
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        
         UpdateNearestTorch();
     }
 
@@ -59,26 +65,83 @@ public class EnemyAI : MonoBehaviour
 
     private void ChooseTargetAndMove()
     {
+        if (isDead) return;
+
         Transform target = null;
         float playerDistance = Vector2.Distance(transform.position, player.position);
-        float torchDistance = nearestTorch != null ?
-            Vector2.Distance(transform.position, nearestTorch.position) : Mathf.Infinity;
 
-        // En yakın hedefi seç
-        if (playerDistance <= detectionRange && playerDistance <= torchDistance)
+        // Önce oyuncuyu kontrol et
+        if (playerDistance <= detectionRange)
         {
             target = player;
         }
-        else if (torchDistance <= detectionRange)
+        // Oyuncu yoksa yan meşaleleri kontrol et
+        else
         {
-            target = nearestTorch;
+            GameObject[] torches = GameObject.FindGameObjectsWithTag("Torch");
+            float nearestDistance = Mathf.Infinity;
+
+            foreach (GameObject torch in torches)
+            {
+                if (torch.GetComponent<TorchLightController>().isMainTorch) continue;
+
+                float distance = Vector2.Distance(transform.position, torch.transform.position);
+                if (distance < nearestDistance && distance <= detectionRange)
+                {
+                    nearestDistance = distance;
+                    target = torch.transform;
+                }
+            }
         }
 
+        // Hedef varsa hedefe doğru hareket et
         if (target != null)
         {
-            Vector2 direction = (target.position - transform.position).normalized;
-            rb.MovePosition((Vector2)transform.position + direction * moveSpeed * currentSpeedMultiplier * Time.deltaTime);
+            Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
+            rb.linearVelocity = direction * moveSpeed * currentSpeedMultiplier;
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Hedef menzildeyse saldır
+            float targetDistance = Vector2.Distance(transform.position, target.position);
+            if (targetDistance <= attackRange && Time.time >= nextAttackTime)
+            {
+                if (target == player)
+                {
+                    player.GetComponent<PlayerController>()?.TakeDamage(attackDamage);
+                }
+                else
+                {
+                    target.GetComponent<TorchLightController>()?.TakeDamage(attackDamage);
+                }
+                nextAttackTime = Time.time + attackCooldown;
+            }
         }
+        // Hedef yoksa random hareket et
+        else
+        {
+            RandomMove();
+        }
+    }
+
+    private void RandomMove()
+    {
+        randomDirectionTimer -= Time.deltaTime;
+
+        if (randomDirectionTimer <= 0)
+        {
+            // Yeni random yön belirle
+            randomDirection = Random.insideUnitCircle.normalized;
+            randomDirectionTimer = randomMoveInterval;
+        }
+
+        // Random yönde hareket et
+        rb.linearVelocity = randomDirection * randomMoveSpeed * currentSpeedMultiplier;
+
+        // Hareket yönüne dön
+        float angle = Mathf.Atan2(randomDirection.y, randomDirection.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     [System.Obsolete]
