@@ -14,23 +14,23 @@ public class TorchNetwork : MonoBehaviour
             return;
         }
 
-        PositionSatelliteTorches();
+       // PositionSatelliteTorches();
     }
 
-    private void PositionSatelliteTorches()
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            float angle = i * 90f * Mathf.Deg2Rad; // 90 derece aralıklarla
-            Vector3 position = mainTorch.transform.position + new Vector3(
-                Mathf.Cos(angle) * networkRadius,
-                Mathf.Sin(angle) * networkRadius,
-                0
-            );
+   // private void PositionSatelliteTorches()
+   // {
+   //     for (int i = 0; i < 4; i++)
+   //     {
+    //        float angle = i * 90f * Mathf.Deg2Rad; // 90 derece aralıklarla
+    //        Vector3 position = mainTorch.transform.position + new Vector3(
+    //            Mathf.Cos(angle) * networkRadius,
+    //            Mathf.Sin(angle) * networkRadius,
+    //            0
+    //            );
 
-            satelliteTorches[i].transform.position = position;
-        }
-    }
+    //        satelliteTorches[i].transform.position = position;
+    //        }
+    //    }
 
     public float GetMainTorchPower()
     {

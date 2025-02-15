@@ -20,27 +20,41 @@ public class EnemyAI : MonoBehaviour
     private Rigidbody2D rb;
     private float nextAttackTime;
     private bool isDead = false;
+    private float slowEffectMultiplier = 1f;
 
-    private float baseSpeed = 5f;
-    private float currentSpeedMultiplier = 1f;
-
-    private float randomDirectionTimer = 0f;
-    private Vector2 randomDirection;
-    [SerializeField] private float randomMoveInterval = 2f; // Ne sıklıkla yön değiştireceği
-    [SerializeField] private float randomMoveSpeed = 2f; // Random hareketin hızı
+    private void Awake()
+    {
+        Debug.Log("Enemy Awake çağrıldı");
+    }
 
     private void Start()
     {
+        Debug.Log("Enemy Start başladı");
         rb = GetComponent<Rigidbody2D>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        
+        if (rb == null) Debug.LogError("Rigidbody2D bulunamadı!");
+
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        Debug.Log($"Player aranıyor... Tag ile bulunan obje: {(player != null ? player.name : "Bulunamadı")}");
+
+        // Alternatif arama yöntemi
+        var allPlayers = GameObject.FindObjectsOfType<PlayerController>();
+        Debug.Log($"Sahnede bulunan PlayerController sayısı: {allPlayers.Length}");
         UpdateNearestTorch();
     }
 
-    [System.Obsolete]
-    private void Update()
+    private void FixedUpdate()
     {
-        if (isDead) return;
+        if (isDead)
+        {
+            Debug.Log("Enemy ölü durumda");
+            return;
+        }
+
+        if (player == null)
+        {
+            Debug.LogError("Player referansı yok!");
+            return;
+        }
 
         UpdateNearestTorch();
         ChooseTargetAndMove();
@@ -51,143 +65,120 @@ public class EnemyAI : MonoBehaviour
     {
         GameObject[] torches = GameObject.FindGameObjectsWithTag("Torch");
         float nearestDistance = Mathf.Infinity;
+        nearestTorch = null; // Her frame'de sıfırla
 
         foreach (GameObject torch in torches)
         {
-            float distance = Vector2.Distance(transform.position, torch.transform.position);
-            if (distance < nearestDistance)
+            if (torch != null && torch.activeInHierarchy)
             {
-                nearestDistance = distance;
-                nearestTorch = torch.transform;
+                float distance = Vector2.Distance(transform.position, torch.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearestTorch = torch.transform;
+                    Debug.Log($"En yakın meşale bulundu: {distance} birim uzaklıkta");
+                }
             }
         }
     }
 
     private void ChooseTargetAndMove()
     {
-        if (isDead) return;
+        if (player == null)
+        {
+            Debug.LogError("Player referansı yok!");
+            return;
+        }
 
-        Transform target = null;
         float playerDistance = Vector2.Distance(transform.position, player.position);
-
-        // Önce oyuncuyu kontrol et
+        float torchDistance = nearestTorch != null ? Vector2.Distance(transform.position, nearestTorch.position) : Mathf.Infinity;
+        
+        Vector2 direction = Vector2.zero;
+        
+        // Önce oyuncuya bakıyoruz
         if (playerDistance <= detectionRange)
         {
-            target = player;
+            direction = (player.position - transform.position).normalized;
+            Debug.Log($"Oyuncuya doğru hareket: {direction}");
         }
-        // Oyuncu yoksa yan meşaleleri kontrol et
+        // Oyuncu menzilde değilse ve meşale varsa
+        else if (torchDistance <= detectionRange)
+        {
+            direction = (nearestTorch.position - transform.position).normalized;
+            Debug.Log($"Meşaleye doğru hareket: {direction}");
+        }
+        
+        // Hareket kontrolü
+        if (direction != Vector2.zero)
+        {
+            rb.linearVelocity = direction * moveSpeed;
+        }
         else
         {
-            GameObject[] torches = GameObject.FindGameObjectsWithTag("Torch");
-            float nearestDistance = Mathf.Infinity;
+            rb.linearVelocity = Vector2.zero;
+            Debug.Log("Hedef yok - Duruyorum");
+        }
+    }
 
-            foreach (GameObject torch in torches)
-            {
-                if (torch.GetComponent<TorchLightController>().isMainTorch) continue;
-
-                float distance = Vector2.Distance(transform.position, torch.transform.position);
-                if (distance < nearestDistance && distance <= detectionRange)
-                {
-                    nearestDistance = distance;
-                    target = torch.transform;
-                }
-            }
+    private void TryAttack()
+    {
+        if (Time.time < nextAttackTime)
+        {
+            Debug.Log($"Saldırı bekleme süresi: {nextAttackTime - Time.time:F1} saniye");
+            return;
         }
 
-        // Hedef varsa hedefe doğru hareket et
-        if (target != null)
+        float playerDistance = Vector2.Distance(transform.position, player.position);
+        float torchDistance = nearestTorch != null ? Vector2.Distance(transform.position, nearestTorch.position) : Mathf.Infinity;
+
+        // Önce oyuncuya saldır
+        if (playerDistance <= attackRange)
         {
-            Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed * currentSpeedMultiplier;
-
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-
-            // Hedef menzildeyse saldır
-            float targetDistance = Vector2.Distance(transform.position, target.position);
-            if (targetDistance <= attackRange && Time.time >= nextAttackTime)
+            var playerController = player.GetComponent<PlayerController>();
+            if (playerController != null)
             {
-                if (target == player)
-                {
-                    player.GetComponent<PlayerController>()?.TakeDamage(attackDamage);
-                }
-                else
-                {
-                    target.GetComponent<TorchLightController>()?.TakeDamage(attackDamage);
-                }
+                playerController.TakeDamage(attackDamage);
+                Debug.Log($"Oyuncuya {attackDamage} hasar verildi! Mesafe: {playerDistance:F2}");
                 nextAttackTime = Time.time + attackCooldown;
             }
         }
-        // Hedef yoksa random hareket et
-        else
+        // Sonra meşaleye saldır
+        else if (nearestTorch != null && torchDistance <= attackRange)
         {
-            RandomMove();
-        }
-    }
-
-    private void RandomMove()
-    {
-        randomDirectionTimer -= Time.deltaTime;
-
-        if (randomDirectionTimer <= 0)
-        {
-            // Yeni random yön belirle
-            randomDirection = Random.insideUnitCircle.normalized;
-            randomDirectionTimer = randomMoveInterval;
-        }
-
-        // Random yönde hareket et
-        rb.linearVelocity = randomDirection * randomMoveSpeed * currentSpeedMultiplier;
-
-        // Hareket yönüne dön
-        float angle = Mathf.Atan2(randomDirection.y, randomDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-    }
-
-    [System.Obsolete]
-    private void TryAttack()
-    {
-        if (Time.time < nextAttackTime) return;
-
-        if (Vector2.Distance(transform.position, player.position) <= attackRange)
-        {
-            // Oyuncuya saldır
-            player.GetComponent<PlayerController>()?.TakeDamage(attackDamage);
-            nextAttackTime = Time.time + attackCooldown;
-        }
-        else if (nearestTorch != null &&
-                 Vector2.Distance(transform.position, nearestTorch.position) <= attackRange)
-        {
-            // Meşaleye saldır
             var torchController = nearestTorch.GetComponent<TorchLightController>();
             if (torchController != null)
             {
-                torchController.enabled = false; // Meşaleyi devre dışı bırak
+                torchController.TakeDamage(attackDamage);
+                Debug.Log($"Meşaleye {attackDamage} hasar verildi! Mesafe: {torchDistance:F2}");
+                nextAttackTime = Time.time + attackCooldown;
             }
-            nextAttackTime = Time.time + attackCooldown;
+        }
+        else
+        {
+            Debug.Log($"Saldırı menzili dışında - Player: {playerDistance:F2}, Torch: {torchDistance:F2}, Menzil: {attackRange}");
         }
     }
 
     public void Die()
     {
         isDead = true;
-
-        // Eşya düşürme
+        rb.linearVelocity = Vector2.zero; // Ölünce hareketi durdur
+        
         if (Random.value <= woodDropChance)
         {
             Instantiate(woodPrefab, transform.position, Quaternion.identity);
         }
-
+        
         if (Random.value <= cardDropChance)
         {
             Instantiate(cardPrefab, transform.position, Quaternion.identity);
         }
-
+        
         Destroy(gameObject);
     }
 
     public void SetSlowEffect(float slowRate)
     {
-        currentSpeedMultiplier = 1f - slowRate;
+        slowEffectMultiplier = 1f - slowRate;
     }
 }

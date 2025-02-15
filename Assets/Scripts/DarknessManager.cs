@@ -4,16 +4,26 @@ using UnityEngine.Rendering.Universal;
 public class DarknessManager : MonoBehaviour
 {
     [Header("Karanlik Ayarlari")]
-    [SerializeField] private float globalDarknessIntensity = 0.8f;
-    [SerializeField] private Color darknessColor = Color.black;
+    [SerializeField] private float globalDarknessIntensity = 0.95f; // Daha karanlık
+    [SerializeField] private Color darknessColor = new Color(0.05f, 0.05f, 0.1f); // Koyu mavi-siyah
+    [SerializeField] private float minLightIntensity = 0.05f; // Minimum ortam ışığı
+
+    [Header("Meşale Ayarları")]
+    [SerializeField] private float baseTorchRadius = 3f;
+    [SerializeField] private float woodRadiusIncrease = 0.5f;
+    [SerializeField] private float maxTorchRadius = 10f;
 
     [Header("Referanslar")]
     [SerializeField] private Light2D globalLight;
-    [SerializeField] private Light2D[] excludedLights;
+    [SerializeField] private TorchLightController mainTorch;
 
     private void Start()
     {
         SetupGlobalDarkness();
+        if (mainTorch != null)
+        {
+            ConfigureMainTorch();
+        }
     }
 
     private void SetupGlobalDarkness()
@@ -23,68 +33,50 @@ public class DarknessManager : MonoBehaviour
             CreateGlobalLight();
         }
 
-        globalLight.intensity = 1 - globalDarknessIntensity;
+        // Çok karanlık bir ortam ayarla
+        globalLight.intensity = minLightIntensity;
         globalLight.color = darknessColor;
-
-        // Diğer ışıkları ayarla
-        ConfigureExcludedLights();
     }
 
     private void CreateGlobalLight()
     {
-        GameObject lightObj = new GameObject("Global Darkness Light");
+        GameObject lightObj = new GameObject("Global Light 2D");
         lightObj.transform.parent = transform;
 
         globalLight = lightObj.AddComponent<Light2D>();
         globalLight.lightType = Light2D.LightType.Global;
+        globalLight.intensity = minLightIntensity;
+        globalLight.color = darknessColor;
         globalLight.blendStyleIndex = 0;
     }
 
-    private void ConfigureExcludedLights()
+    private void ConfigureMainTorch()
     {
-        if (excludedLights == null) return;
-
-        foreach (var light in excludedLights)
+        // Ana meşalenin başlangıç ayarları
+        Light2D torchLight = mainTorch.GetComponent<Light2D>();
+        if (torchLight != null)
         {
-            if (light != null)
+            torchLight.pointLightOuterRadius = baseTorchRadius;
+            torchLight.intensity = 1f;
+            torchLight.color = new Color(1f, 0.95f, 0.8f); // Sıcak ışık rengi
+        }
+    }
+
+    public void IncreaseTorchRadius(float amount)
+    {
+        if (mainTorch != null)
+        {
+            Light2D torchLight = mainTorch.GetComponent<Light2D>();
+            if (torchLight != null)
             {
-                // Bu ışıkların global karanlıktan etkilenmemesini sağla
-                // light.useNormalMap = true; // simdilik off
-                light.lightCookieSprite = null;
+                float newRadius = Mathf.Min(torchLight.pointLightOuterRadius + amount, maxTorchRadius);
+                torchLight.pointLightOuterRadius = newRadius;
             }
         }
     }
 
-    public void SetDarknessIntensity(float intensity)
+    public void AddWoodToTorch()
     {
-        globalDarknessIntensity = Mathf.Clamp01(intensity);
-        if (globalLight != null)
-        {
-            globalLight.intensity = 1 - globalDarknessIntensity;
-        }
-    }
-
-    public void AddExcludedLight(Light2D light)
-    {
-        if (light == null) return;
-
-        // Yeni bir dizi oluştur ve eski ışıkları kopyala
-        Light2D[] newLights = new Light2D[excludedLights.Length + 1];
-        excludedLights.CopyTo(newLights, 0);
-        newLights[excludedLights.Length] = light;
-        excludedLights = newLights;
-
-        // Yeni ışığı yapılandır
-        // light.useNormalMap = true; // simdilik bos
-        // light.renderingLayerMask = 1; // simdilik bosy
-    }
-
-    public void RemoveExcludedLight(Light2D light)
-    {
-        if (light == null) return;
-
-        var lightsList = new System.Collections.Generic.List<Light2D>(excludedLights);
-        lightsList.Remove(light);
-        excludedLights = lightsList.ToArray();
+        IncreaseTorchRadius(woodRadiusIncrease);
     }
 }

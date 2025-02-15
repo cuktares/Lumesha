@@ -27,6 +27,10 @@ public class TorchLightController : MonoBehaviour
     [SerializeField] private float flickerIntensity = 0.1f;
     [SerializeField] private float flickerSpeed = 10f;
 
+    [Header("Hasar ve Sönme Ayarları")]
+    [SerializeField] private float damageDecayRate = 0.5f; // Hasar alınca ışığın azalma hızı
+    [SerializeField] private float minHealthBeforeDestroy = 10f; // Bu değerin altında sönmeye başlar
+
     private Light2D torchLight;
     private float currentHealth;
     private float currentLightRadius;
@@ -119,23 +123,43 @@ public class TorchLightController : MonoBehaviour
     {
         if (isMainTorch) return; // Ana meşale hasar almaz
 
-        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth - damage);
+        Debug.Log($"Meşale hasar aldı! Kalan can: {currentHealth:F1}");
 
-        if (currentHealth <= 0)
+        // Işık yarıçapını kademeli olarak azalt
+        float targetRadius = Mathf.Lerp(minLightRadius, maxLightRadius, currentHealth / maxHealth);
+        currentLightRadius = Mathf.Lerp(currentLightRadius, targetRadius, damageDecayRate * Time.deltaTime);
+        torchLight.pointLightOuterRadius = currentLightRadius;
+        Debug.Log($"Meşale ışığı azalıyor! Yeni yarıçap: {currentLightRadius:F2}");
+
+        if (currentHealth <= minHealthBeforeDestroy)
         {
-            // Meşale söndü
-            torchLight.enabled = false;
-            enabled = false;
-
-            // Meşale yok olma efekti
-            StartCoroutine(DestroyTorch());
+            StartCoroutine(SlowlyDiminish());
         }
     }
 
-    private IEnumerator DestroyTorch()
+    private IEnumerator SlowlyDiminish()
     {
-        // Yok olma efekti (örneğin particle effect)
-        yield return new WaitForSeconds(1f);
+        float startIntensity = torchLight.intensity;
+        float diminishDuration = 3f; // Sönme süresi
+        float elapsedTime = 0f;
+
+        while (elapsedTime < diminishDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / diminishDuration;
+
+            // Işık yoğunluğunu ve yarıçapını kademeli olarak azalt
+            torchLight.intensity = Mathf.Lerp(startIntensity, 0f, progress);
+            currentLightRadius = Mathf.Lerp(currentLightRadius, minLightRadius, progress);
+            torchLight.pointLightOuterRadius = currentLightRadius;
+
+            Debug.Log($"Meşale sönüyor... Yoğunluk: {torchLight.intensity:F2}, Yarıçap: {currentLightRadius:F2}");
+            yield return null;
+        }
+
+        Debug.Log("Meşale tamamen söndü!");
+        enabled = false;
         gameObject.SetActive(false);
     }
 
@@ -143,10 +167,15 @@ public class TorchLightController : MonoBehaviour
     {
         if (isMainTorch)
         {
+            // DarknessManager'ı bul ve meşale yarıçapını artır
+            var darknessManager = FindAnyObjectByType<DarknessManager>();
+            if (darknessManager != null)
+            {
+                darknessManager.AddWoodToTorch();
+            }
+            
             currentLightRadius = Mathf.Min(maxLightRadius, currentLightRadius + 2f);
             torchLight.pointLightOuterRadius = currentLightRadius;
-            
-            // Odun eklendiğinde animasyonu hemen güncelle
             UpdateTorchAnimation();
         }
     }

@@ -9,15 +9,17 @@ TagManager:
   - Wood
   - Torch
   - Tree
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - torch
+  - Tree
   - Water
   - UI
+  - UI
   - Enemy
-  - Tree
+  - Player
   - 
   - 
   - 
@@ -26,13 +28,12 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Layer 3
   - 
   - 
   - 
   - Layer 1
   - Layer 2
-  - Layer 3
   - 
   - 
   - 
@@ -57,6 +58,9 @@ TagManager:
     locked: 0
   - name: torch
     uniqueID: 3238665503
+    locked: 0
+  - name: Player
+    uniqueID: 4153335321
     locked: 0
   m_RenderingLayers:
   - Default
