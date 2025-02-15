@@ -1,0 +1,403 @@
+fileFormatVersion: 2
+guid: 9a951528a630c044ab3cd5ba7b001163
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 860417666863929271
+    second: FireBaseProp-Sheet_0
+  - first:
+      213: -4013881410116822765
+    second: FireBaseProp-Sheet_1
+  - first:
+      213: 7111380997928011907
+    second: FireBaseProp-Sheet_2
+  - first:
+      213: -4038869499742375614
+    second: FireBaseProp-Sheet_3
+  - first:
+      213: -4730344024390819210
+    second: FireBaseProp-Sheet_4
+  - first:
+      213: 2543656467870523477
+    second: FireBaseProp-Sheet_5
+  - first:
+      213: 9056709989952524613
+    second: FireBaseProp-Sheet_6
+  - first:
+      213: -3872250617123207219
+    second: FireBaseProp-Sheet_7
+  - first:
+      213: 2718642078938585143
+    second: FireBaseProp-Sheet_8
+  - first:
+      213: -2145275934530115590
+    second: FireBaseProp-Sheet_9
+  - first:
+      213: 3206503255968161388
+    second: FireBaseProp-Sheet_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 7
+        width: 94
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b715ef2f41d0fb00800000000000000
+      internalID: 860417666863929271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 319517bbf14db48c0800000000000000
+      internalID: -4013881410116822765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38846f30753b0b260800000000000000
+      internalID: 7111380997928011907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24132bdb69d03f7c0800000000000000
+      internalID: -4038869499742375614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6722bc81c217a5eb0800000000000000
+      internalID: -4730344024390819210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5502c06a412ec4320800000000000000
+      internalID: 2543656467870523477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5411ad850c5efad70800000000000000
+      internalID: 9056709989952524613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc7851d6490034ac0800000000000000
+      internalID: -3872250617123207219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 738509a119e8ab520800000000000000
+      internalID: 2718642078938585143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 7
+        width: 94
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af7632957e27a32e0800000000000000
+      internalID: -2145275934530115590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireBaseProp-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 982
+        y: 7
+        width: 94
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6e9d17f8b9cf7c20800000000000000
+      internalID: 3206503255968161388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 59be70c672e185e4daed97ac2402fadd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      FireBaseProp-Sheet_0: 860417666863929271
+      FireBaseProp-Sheet_1: -4013881410116822765
+      FireBaseProp-Sheet_10: 3206503255968161388
+      FireBaseProp-Sheet_2: 7111380997928011907
+      FireBaseProp-Sheet_3: -4038869499742375614
+      FireBaseProp-Sheet_4: -4730344024390819210
+      FireBaseProp-Sheet_5: 2543656467870523477
+      FireBaseProp-Sheet_6: 9056709989952524613
+      FireBaseProp-Sheet_7: -3872250617123207219
+      FireBaseProp-Sheet_8: 2718642078938585143
+      FireBaseProp-Sheet_9: -2145275934530115590
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
