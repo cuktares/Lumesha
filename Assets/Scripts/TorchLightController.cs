@@ -201,4 +201,22 @@ public class TorchLightController : MonoBehaviour
     {
         throw new NotImplementedException();
     }
+
+    public void UpdateLightRadius(float newRadius)
+    {
+        if (torchLight != null)
+        {
+            torchLight.pointLightOuterRadius = newRadius;
+            Debug.Log($"Meşale yarıçapı: {newRadius}");
+        }
+    }
+
+    public void UpdateLightIntensity(float newIntensity)
+    {
+        if (torchLight != null)
+        {
+            torchLight.intensity = newIntensity;
+            Debug.Log($"Meşale yoğunluğu: {newIntensity}");
+        }
+    }
 }

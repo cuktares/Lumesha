@@ -41,12 +41,15 @@ public class Wood : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Trigger Enter: {other.tag}");
         if (other.CompareTag("Player"))
         {
-            isInRange = true;
-            nearbyPlayer = other.GetComponent<PlayerController>();
-            Debug.Log("Oyuncu odun menzilinde. E tuşuna basarak toplayabilir.");
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.CollectWood();
+                Debug.Log("Odun otomatik toplandı!");
+                Destroy(gameObject);
+            }
         }
     }
 

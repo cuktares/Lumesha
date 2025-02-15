@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal; // Light2D için bu namespace'i ekleyin
 
 public class EnemyAI : MonoBehaviour
 {
@@ -14,6 +15,14 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] [Range(0f, 1f)] private float woodDropChance = 0.3f;
     [SerializeField] [Range(0f, 1f)] private float cardDropChance = 0.1f;
+
+    [Header("Işık Etkisi Ayarları")]
+    [SerializeField] private float normalSpeed = 3f;
+    [SerializeField] private float lightSlowdownSpeed = 1.5f; // Işıktaki yavaş hız
+    [SerializeField] private LayerMask torchLightLayer;
+    
+    private float currentSpeed;
+    private bool isInLight = false;
 
     private Transform player;
     private Transform nearestTorch;
@@ -111,7 +120,7 @@ public class EnemyAI : MonoBehaviour
         // Hareket kontrolü
         if (direction != Vector2.zero)
         {
-            rb.linearVelocity = direction * moveSpeed;
+            rb.linearVelocity = direction * currentSpeed;
         }
         else
         {
@@ -180,5 +189,43 @@ public class EnemyAI : MonoBehaviour
     public void SetSlowEffect(float slowRate)
     {
         slowEffectMultiplier = 1f - slowRate;
+    }
+
+    private void Update()
+    {
+        CheckLightStatus();
+        // ... diğer update kodları ...
+    }
+
+    private void CheckLightStatus()
+    {
+        // Tüm meşaleleri bul
+        TorchLightController[] torches = FindObjectsByType<TorchLightController>(FindObjectsSortMode.None);
+        isInLight = false;
+
+        foreach (var torch in torches)
+        {
+            float distance = Vector2.Distance(transform.position, torch.transform.position);
+            float lightRadius = torch.GetComponent<Light2D>().pointLightOuterRadius;
+
+            if (distance <= lightRadius)
+            {
+                isInLight = true;
+                break;
+            }
+        }
+
+        // Hızı güncelle
+        currentSpeed = isInLight ? lightSlowdownSpeed : normalSpeed;
+        Debug.Log($"Düşman ışık durumu: {(isInLight ? "Işıkta" : "Karanlıkta")}, Hız: {currentSpeed}");
+    }
+
+    private void MoveTowardsPlayer()
+    {
+        if (player != null)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            rb.linearVelocity = direction * currentSpeed;
+        }
     }
 }

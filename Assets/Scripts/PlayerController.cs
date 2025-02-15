@@ -21,8 +21,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip torchSound;
     [SerializeField] private AudioClip treeCutSound;
 
+    [Header("Meşale Güçlendirme")]
+    [SerializeField] private KeyCode powerUpTorchKey = KeyCode.F;
+    [SerializeField] private float torchCheckRadius = 2f;
+
+    [Header("Işık Etkisi Ayarları")]
+    [SerializeField] private float normalSpeed = 5f;
+    [SerializeField] private float darkSlowdownSpeed = 2.5f; // Karanlıktaki hız
+    [SerializeField] private LayerMask torchLightLayer; // Meşale ışığı layer'ı
+
     private float currentHealth;
     private int woodCount = 0;
+    public int WoodCount => woodCount; // Dışarıdan okuma için property
     private bool canGatherWood = true;
     private bool canCutTree = true;
     private float gatherCooldown = 0.5f;
@@ -34,6 +44,9 @@ public class PlayerController : MonoBehaviour
     private Light2D torchLight;
     private Vector2 lastMovementDirection = Vector2.down;
 
+    private float currentSpeed;
+    private bool isInLight = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -43,9 +56,9 @@ public class PlayerController : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    [System.Obsolete]
     private void Update()
     {
+        CheckLightStatus();
         // Hareket inputları ve animasyon
         HandleMovementAndAnimation();
 
@@ -61,11 +74,42 @@ public class PlayerController : MonoBehaviour
             TryCutTree();
         }
 
-        // Meşaleye odun ekleme (F tuşu)
-        if (Input.GetKeyDown(KeyCode.F))
+        // Ana meşaleye odun ekleme kontrolü
+        if (Input.GetKeyDown(powerUpTorchKey))
         {
-            TryAddWoodToTorch();
+            UseAllWoodsForTorch();
         }
+    }
+
+    private void CheckLightStatus()
+    {
+        // Tüm meşaleleri bul
+        TorchLightController[] torches = FindObjectsByType<TorchLightController>(FindObjectsSortMode.None);
+        isInLight = false;
+
+        foreach (var torch in torches)
+        {
+            float distance = Vector2.Distance(transform.position, torch.transform.position);
+            float lightRadius = torch.GetComponent<Light2D>().pointLightOuterRadius;
+
+            if (distance <= lightRadius)
+            {
+                isInLight = true;
+                break;
+            }
+        }
+
+        // Hızı güncelle
+        currentSpeed = isInLight ? normalSpeed : darkSlowdownSpeed;
+        Debug.Log($"Player ışık durumu: {(isInLight ? "Işıkta" : "Karanlıkta")}, Hız: {currentSpeed}");
+    }
+
+    private void Move()
+    {
+        // Mevcut hareket kodunuzu currentSpeed ile güncelleyin
+        Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        movement.Normalize();
+        rb.linearVelocity = movement * currentSpeed;
     }
 
     private void HandleMovementAndAnimation()
@@ -105,8 +149,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Hareketi uygula
-        rb.linearVelocity = dir * moveSpeed;
-        rb.linearVelocity = dir * moveSpeed;
+        rb.linearVelocity = dir * currentSpeed;
     }
 
     public void TakeDamage(float damage)
@@ -187,11 +230,6 @@ public class PlayerController : MonoBehaviour
         canGatherWood = true;
     }
 
-    public int GetWoodCount()
-    {
-        return woodCount;
-    }
-
     [System.Obsolete]
     public void UseWood(int amount)
     {
@@ -255,34 +293,36 @@ public class PlayerController : MonoBehaviour
         canCutTree = true;
     }
 
-    [System.Obsolete]
-    private void TryAddWoodToTorch()
+    private void UseAllWoodsForTorch()
     {
-        if (woodCount <= 0) return;
-
-        // Ana meşaleyi bul
-        var mainTorch = GameObject.FindGameObjectWithTag("MainTorch");
-        if (mainTorch == null) return;
-
-        // Mesafe kontrolü
-        float distance = Vector2.Distance(transform.position, mainTorch.transform.position);
-        if (distance <= 2f) // Etkileşim mesafesi
+        if (woodCount <= 0)
         {
-            woodCount--;
-            mainTorch.GetComponent<TorchLightController>()?.AddWood();
+            Debug.Log("Kullanılabilir odun yok!");
+            return;
+        }
 
-            // Ses efekti
-            if (audioSource && torchSound)
-            {
-                audioSource.PlayOneShot(torchSound);
-            }
+        GameObject mainTorch = GameObject.FindGameObjectWithTag("MainTorch");
+        if (mainTorch == null)
+        {
+            Debug.LogError("Ana meşale bulunamadı!");
+            return;
+        }
 
-            // UI güncelle
-            var uiManager = FindObjectOfType<UIManager>();
-            if (uiManager != null)
+        float distance = Vector2.Distance(transform.position, mainTorch.transform.position);
+        if (distance <= torchCheckRadius)
+        {
+            DarknessManager darknessManager = FindAnyObjectByType<DarknessManager>();
+            if (darknessManager != null)
             {
-                uiManager.UpdateWoodCount(woodCount);
+                Debug.Log($"Tüm odunlar kullanılıyor! Mevcut odun sayısı: {woodCount}");
+                darknessManager.AddMultipleWoods(woodCount);
+                woodCount = 0; // Tüm odunları kullan
+                Debug.Log("Tüm odunlar kullanıldı!");
             }
+        }
+        else
+        {
+            Debug.Log("Ana meşaleye çok uzaksın!");
         }
     }
 

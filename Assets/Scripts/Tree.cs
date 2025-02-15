@@ -4,37 +4,25 @@ public class Tree : MonoBehaviour
 {
     [Header("Prefab Referansları")]
     [SerializeField] private GameObject cutTreeSprite; // Kesilmis agac sprite'i
-    [SerializeField] private GameObject woodPrefab; // Dusecek odun prefabi
-    [SerializeField] private int maxHealth = 3; // Kaç vurusta kesilecegi
+    [SerializeField] private GameObject woodPrefab; // Inspector'dan atanacak
     [SerializeField] private int woodSpawnCount = 3;
 
     private int currentHealth;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
     private bool isCut = false;
-    private GameObject loadedWoodPrefab;
 
     private void Awake()
     {
-        // Prefab referansını Resources klasöründen al ve sakla
         if (woodPrefab == null)
         {
-            loadedWoodPrefab = Resources.Load<GameObject>("Prefabs/Wood");
-            if (loadedWoodPrefab != null)
-            {
-                woodPrefab = loadedWoodPrefab;
-                Debug.Log("Wood prefab başarıyla yüklendi");
-            }
-            else
-            {
-                Debug.LogError("Wood prefab Resources/Prefabs/Wood'da bulunamadı!");
-            }
+            Debug.LogError("Wood prefab referansı eksik! Tree prefabının Inspector'ından Wood prefabını sürükleyin.");
         }
     }
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth = 3;
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         
@@ -63,7 +51,7 @@ public class Tree : MonoBehaviour
         }
 
         currentHealth--;
-        Debug.Log($"Ağaç hasar aldı! Kalan can: {currentHealth}/{maxHealth}");
+        Debug.Log($"Ağaç hasar aldı! Kalan can: {currentHealth}/3");
 
         StartCoroutine(DamageEffect());
 
@@ -111,32 +99,19 @@ public class Tree : MonoBehaviour
 
     private System.Collections.IEnumerator SpawnWoodsAfterAnimation()
     {
-        yield return new WaitForSeconds(1f);
-
         if (woodPrefab == null)
         {
-            Debug.LogError("Wood prefab referansı kayıp! Odunlar oluşturulamıyor.");
+            Debug.LogError("Wood prefab referansı eksik! Odunlar oluşturulamıyor.");
             yield break;
         }
 
-        Debug.Log("Odunlar oluşturuluyor...");
-
+        yield return new WaitForSeconds(1f);
+        
         for (int i = 0; i < woodSpawnCount; i++)
         {
-            try
-            {
-                Vector3 spawnPosition = transform.position;
-                GameObject wood = Instantiate(woodPrefab, spawnPosition, Quaternion.identity);
-                
-                if (wood != null)
-                {
-                    Debug.Log($"Odun {i + 1} başarıyla oluşturuldu");
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Odun oluşturma hatası: {e.Message}");
-            }
+            Vector3 spawnPosition = transform.position;
+            GameObject wood = Instantiate(woodPrefab, spawnPosition, Quaternion.identity);
+            Debug.Log($"Odun {i + 1} oluşturuldu");
         }
 
         if (cutTreeSprite != null)
