@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2979373802209538237}
   - component: {fileID: 8931187991256823690}
   - component: {fileID: 8523631039004826409}
-  - component: {fileID: 2452055094904533124}
+  - component: {fileID: 1065858853935589066}
   m_Layer: 0
   m_Name: MainTorch (1)
   m_TagString: Torch
@@ -174,7 +174,7 @@ MonoBehaviour:
   flickerSpeed: 10
   damageDecayRate: 0.5
   minHealthBeforeDestroy: 10
---- !u!95 &2452055094904533124
+--- !u!95 &1065858853935589066
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0

@@ -172,10 +172,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 7
-        width: 94
-        height: 78
+        x: 0
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,10 +194,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_1
       rect:
         serializedVersion: 2
-        x: 100
-        y: 7
-        width: 94
-        height: 83
+        x: 98
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,10 +216,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_2
       rect:
         serializedVersion: 2
-        x: 198
-        y: 7
-        width: 94
-        height: 72
+        x: 196
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -238,10 +238,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_3
       rect:
         serializedVersion: 2
-        x: 296
-        y: 7
-        width: 94
-        height: 80
+        x: 294
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -260,10 +260,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_4
       rect:
         serializedVersion: 2
-        x: 394
-        y: 7
-        width: 94
-        height: 77
+        x: 392
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -282,10 +282,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_5
       rect:
         serializedVersion: 2
-        x: 492
-        y: 7
-        width: 94
-        height: 72
+        x: 490
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -304,10 +304,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_6
       rect:
         serializedVersion: 2
-        x: 590
-        y: 7
-        width: 96
-        height: 72
+        x: 588
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -326,10 +326,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_7
       rect:
         serializedVersion: 2
-        x: 688
-        y: 7
-        width: 94
-        height: 81
+        x: 686
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -348,10 +348,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_8
       rect:
         serializedVersion: 2
-        x: 786
-        y: 7
-        width: 94
-        height: 72
+        x: 784
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -370,10 +370,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_9
       rect:
         serializedVersion: 2
-        x: 884
-        y: 7
-        width: 96
-        height: 79
+        x: 882
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -392,10 +392,10 @@ TextureImporter:
       name: FireBaseBiggerFire-Sheet_10
       rect:
         serializedVersion: 2
-        x: 982
-        y: 7
-        width: 94
-        height: 77
+        x: 980
+        y: 0
+        width: 98
+        height: 92
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
