@@ -126,9 +126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62acef44e9ad1d14cb6faca6ac0bca2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxLightRadius: 40
-  minLightRadius: 20
-  lightDecreaseRate: 10
+  maxLightRadius: 8
+  minLightRadius: 0.5
+  lightDecreaseRate: 0.1
   maxHealth: 100
   isMainTorch: 1
   mainTorchRange: 15
@@ -147,8 +147,9 @@ MonoBehaviour:
   minHealthBeforeDestroy: 10
   torchLight: {fileID: 5864612308777205859}
   baseRadius: 3
-  radiusIncreasePerWood: 0.5
+  radiusIncreasePerWood: 2
   maxRadius: 6
+  healthDecreaseRate: 0.05
 --- !u!114 &5864612308777205859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,7 +215,7 @@ CircleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -235,5 +236,5 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.13712597}
-  m_Radius: 1.394124
+  m_Offset: {x: 0, y: -0.07835929}
+  m_Radius: 1.3353573

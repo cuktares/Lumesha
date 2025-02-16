@@ -39,9 +39,13 @@ public class TorchLightController : MonoBehaviour
     private Animator animator;
     private bool isPowerfulMode = false;
 
+    [Header("Işık Ayarları")]
     [SerializeField] private float baseRadius = 3f;
     [SerializeField] private float radiusIncreasePerWood = 0.5f;
     [SerializeField] private float maxRadius = 6f;
+    
+    [Header("Can Ayarları")]
+    [SerializeField] private float healthDecreaseRate = 0.05f;
 
     private bool isDead = false;
 
@@ -76,17 +80,17 @@ public class TorchLightController : MonoBehaviour
 
     private void Update()
     {
-        if (!isDead)
+        if (!isDead && !isMainTorch) // Ana meşale değilse azalt
         {
             // Sürekli can azalt
-            currentHealth -= 0.1f * Time.deltaTime;
+            currentHealth -= healthDecreaseRate * Time.deltaTime;
             UpdateLightRadius();
 
-            // Meşale söndü mü kontrol et
-            if (currentHealth <= 0)
+            // Minimum değere ulaştı mı kontrol et
+            if (currentHealth <= minLightRadius)
             {
                 isDead = true;
-                torchLight.pointLightOuterRadius = 0;
+                Destroy(gameObject); // Meşaleyi yok et
             }
         }
 
@@ -192,20 +196,15 @@ public class TorchLightController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void AddWood()
+    public void AddWood(int woodCount)
     {
         if (isMainTorch)
         {
-            // DarknessManager'ı bul ve meşale yarıçapını artır
-            var darknessManager = FindAnyObjectByType<DarknessManager>();
-            if (darknessManager != null)
-            {
-                darknessManager.AddWoodToTorch();
-            }
-            
-            currentHealth = Mathf.Min(maxHealth, currentHealth + 2f);
-            torchLight.pointLightOuterRadius = currentHealth;
-            UpdateTorchAnimation();
+            float increase = radiusIncreasePerWood * woodCount; // Odun sayısına göre artış
+            currentHealth = Mathf.Min(currentHealth + increase, maxHealth);
+            isDead = false;
+            UpdateLightRadius();
+            Debug.Log($"Meşale güçlendirildi! Odun: {woodCount}, Yeni yarıçap: {currentHealth}");
         }
     }
 
@@ -233,7 +232,7 @@ public class TorchLightController : MonoBehaviour
 
     public void UpdateLightRadius()
     {
-        torchLight.pointLightOuterRadius = Mathf.Max(0, currentHealth);
+        torchLight.pointLightOuterRadius = Mathf.Max(minLightRadius, currentHealth);
     }
 
     public void UpdateLightIntensity(float newIntensity)
@@ -247,7 +246,9 @@ public class TorchLightController : MonoBehaviour
 
     public void IncreaseLight()
     {
-        currentHealth = Mathf.Min(currentHealth + radiusIncreasePerWood * 3, maxHealth); // 3 odun değeri
+        float increase = radiusIncreasePerWood * 3; // 3 odun değeri
+        currentHealth = Mathf.Min(currentHealth + increase, maxHealth);
+        isDead = false; // Canlandır
         UpdateLightRadius();
         Debug.Log($"Meşale güçlendirildi! Yeni yarıçap: {currentHealth}");
     }

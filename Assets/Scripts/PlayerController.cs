@@ -51,8 +51,8 @@ public class PlayerController : MonoBehaviour
     private UIManager uiManager;
 
     [Header("Meşale Referansları")]
-    [SerializeField] private GameObject mainTorch; // Ana meşale referansı
-    [SerializeField] private LayerMask torchLayer; // Meşale layer'ı
+    [SerializeField] private GameObject mainTorch;
+    [SerializeField] private LayerMask torchLayer;
 
     private void Awake()
     {
@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
         if (movement != Vector2.zero)
         {
             lastMovementDirection = movement;
-            animator.SetBool("IsMoving", true);
+            animator.SetBool("isMoving", true);
             animator.SetFloat("moveX", movement.x);
             animator.SetFloat("moveY", movement.y);
             
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            animator.SetBool("IsMoving", false);
+            animator.SetBool("isMoving", false);
             // Durunca hemen dursun
             rb.linearVelocity = Vector2.zero;
         }
@@ -291,20 +291,24 @@ public class PlayerController : MonoBehaviour
     {
         if (mainTorch == null || uiManager == null) return;
 
-        if (woodCount >= 3)
+        if (woodCount > 0)
         {
             if (Vector2.Distance(transform.position, mainTorch.transform.position) <= torchCheckRadius)
             {
-                // Meşaleyi güçlendir
                 var torchController = mainTorch.GetComponent<TorchLightController>();
                 if (torchController != null)
                 {
-                    torchController.IncreaseLight();
+                    torchController.AddWood(woodCount);
+                    
+                    // Odunları sıfırla
+                    int usedWood = woodCount;
                     woodCount = 0;
                     uiManager.UpdateWoodCount(woodCount);
                     
                     if (audioSource != null && torchSound != null)
                         audioSource.PlayOneShot(torchSound);
+                        
+                    Debug.Log($"Meşaleye {usedWood} odun eklendi!");
                 }
             }
             else
@@ -314,7 +318,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Yeterli odunun yok! (3 odun gerekli)");
+            Debug.LogWarning("Hiç odunun yok!");
         }
     }
 

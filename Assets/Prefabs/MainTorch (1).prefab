@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2979373802209538237}
   - component: {fileID: 8931187991256823690}
   - component: {fileID: 8523631039004826409}
-  - component: {fileID: 1065858853935589066}
-  m_Layer: 0
+  - component: {fileID: 1546482924592846911}
+  m_Layer: 11
   m_Name: MainTorch (1)
   m_TagString: Torch
   m_Icon: {fileID: 0}
@@ -131,8 +131,8 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 1
+  m_PointLightInnerRadius: 0.1
+  m_PointLightOuterRadius: 5
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62acef44e9ad1d14cb6faca6ac0bca2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxLightRadius: 10
-  minLightRadius: 2
+  maxLightRadius: 15
+  minLightRadius: 0.5
   lightDecreaseRate: 0.5
   maxHealth: 100
   isMainTorch: 0
@@ -164,7 +164,7 @@ MonoBehaviour:
   enemySlowRate: 10
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   normalTorchSprite: {fileID: 1865168224486425489, guid: 37496df2fa888e94a9cf88673fc2a001,
     type: 3}
   powerfulTorchSprite: {fileID: 1865168224486425489, guid: 37496df2fa888e94a9cf88673fc2a001,
@@ -178,7 +178,8 @@ MonoBehaviour:
   baseRadius: 3
   radiusIncreasePerWood: 5
   maxRadius: 6
---- !u!95 &1065858853935589066
+  healthDecreaseRate: 0.05
+--- !u!95 &1546482924592846911
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
