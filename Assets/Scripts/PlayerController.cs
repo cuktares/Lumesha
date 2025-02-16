@@ -124,12 +124,13 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("moveX", movement.x);
             animator.SetFloat("moveY", movement.y);
             
-            // AddForce yerine linearVelocity kullanımı
+            // Hızı doğrudan ayarla
             rb.linearVelocity = movement * currentSpeed;
         }
         else
         {
             animator.SetBool("isMoving", false);
+            // Durunca hemen dursun
             rb.linearVelocity = Vector2.zero;
         }
     }
