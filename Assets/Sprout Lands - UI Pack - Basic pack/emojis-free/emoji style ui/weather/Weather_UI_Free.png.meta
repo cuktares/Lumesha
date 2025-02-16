@@ -273,7 +273,12 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Weather_UI_Free_0: -7926304581616854735
+      Weather_UI_Free_1: -837290967229970518
+      Weather_UI_Free_2: -3787741694367071315
+      Weather_UI_Free_3: -3801500677667731030
+      Weather_UI_Free_4: -4195164393145968089
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
