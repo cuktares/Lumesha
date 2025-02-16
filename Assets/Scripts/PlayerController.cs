@@ -50,6 +50,10 @@ public class PlayerController : MonoBehaviour
     private bool isInLight = false;
     private UIManager uiManager;
 
+    [Header("Meşale Referansları")]
+    [SerializeField] private GameObject mainTorch; // Ana meşale referansı
+    [SerializeField] private LayerMask torchLayer; // Meşale layer'ı
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -60,10 +64,23 @@ public class PlayerController : MonoBehaviour
         uiManager = FindAnyObjectByType<UIManager>();
     }
 
+    private void Start()
+    {
+        // Başlangıçta referansları al
+        if (uiManager == null)
+            uiManager = FindAnyObjectByType<UIManager>();
+    }
+
     private void Update()
     {
-        CheckLightStatus();
         HandleMovementAndAnimation();
+        CheckLightStatus();
+        
+        // Meşale güçlendirme kontrolü
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            UseAllWoodsForTorch();
+        }
 
         // Ağaç kesme (Space tuşu)
         if (Input.GetKeyDown(KeyCode.Space))
@@ -71,30 +88,26 @@ public class PlayerController : MonoBehaviour
             TryCutTree();
         }
 
-        // Ana meşaleye odun ekleme kontrolü
-        if (Input.GetKeyDown(powerUpTorchKey))
-        {
-            UseAllWoodsForTorch();
-        }
-
         HandleLadderMovement();
     }
         
     private void CheckLightStatus()
     {
-        // Tüm meşaleleri bul
-        TorchLightController[] torches = FindObjectsByType<TorchLightController>(FindObjectsSortMode.None);
-        isInLight = false;
+        // Çevredeki ışıkları kontrol et
+        Collider2D[] lights = Physics2D.OverlapCircleAll(transform.position, 1f, torchLayer);
+        bool isInLight = false;
 
-        foreach (var torch in torches)
+        foreach (Collider2D lightCollider in lights)
         {
-            float distance = Vector2.Distance(transform.position, torch.transform.position);
-            float lightRadius = torch.GetComponent<Light2D>().pointLightOuterRadius;
-
-            if (distance <= lightRadius)
+            Light2D light = lightCollider.GetComponent<Light2D>();
+            if (light != null)
             {
-                isInLight = true;
-                break;
+                float distanceToLight = Vector2.Distance(transform.position, lightCollider.transform.position);
+                if (distanceToLight <= light.pointLightOuterRadius)
+                {
+                    isInLight = true;
+                    break;
+                }
             }
         }
 
@@ -120,7 +133,7 @@ public class PlayerController : MonoBehaviour
         if (movement != Vector2.zero)
         {
             lastMovementDirection = movement;
-            animator.SetBool("isMoving", true);
+            animator.SetBool("IsMoving", true);
             animator.SetFloat("moveX", movement.x);
             animator.SetFloat("moveY", movement.y);
             
@@ -129,7 +142,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            animator.SetBool("isMoving", false);
+            animator.SetBool("IsMoving", false);
             // Durunca hemen dursun
             rb.linearVelocity = Vector2.zero;
         }
@@ -276,34 +289,32 @@ public class PlayerController : MonoBehaviour
 
     private void UseAllWoodsForTorch()
     {
-        if (woodCount <= 0)
-        {
-            Debug.Log("Kullanılabilir odun yok!");
-            return;
-        }
+        if (mainTorch == null || uiManager == null) return;
 
-        GameObject mainTorch = GameObject.FindGameObjectWithTag("MainTorch");
-        if (mainTorch == null)
+        if (woodCount >= 3)
         {
-            Debug.LogError("Ana meşale bulunamadı!");
-            return;
-        }
-
-        float distance = Vector2.Distance(transform.position, mainTorch.transform.position);
-        if (distance <= torchCheckRadius)
-        {
-            DarknessManager darknessManager = FindAnyObjectByType<DarknessManager>();
-            if (darknessManager != null)
+            if (Vector2.Distance(transform.position, mainTorch.transform.position) <= torchCheckRadius)
             {
-                Debug.Log($"Tüm odunlar kullanılıyor! Mevcut odun sayısı: {woodCount}");
-                darknessManager.AddMultipleWoods(woodCount);
-                woodCount = 0; // Tüm odunları kullan
-                Debug.Log("Tüm odunlar kullanıldı!");
+                // Meşaleyi güçlendir
+                var torchController = mainTorch.GetComponent<TorchLightController>();
+                if (torchController != null)
+                {
+                    torchController.IncreaseLight();
+                    woodCount = 0;
+                    uiManager.UpdateWoodCount(woodCount);
+                    
+                    if (audioSource != null && torchSound != null)
+                        audioSource.PlayOneShot(torchSound);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Meşaleye yakın değilsin!");
             }
         }
         else
         {
-            Debug.Log("Ana meşaleye çok uzaksın!");
+            Debug.LogWarning("Yeterli odunun yok! (3 odun gerekli)");
         }
     }
 
