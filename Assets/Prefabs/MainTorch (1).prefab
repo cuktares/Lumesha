@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxLightRadius: 15
-  minLightRadius: 0.5
+  minLightRadius: 1
   lightDecreaseRate: 0.5
   maxHealth: 100
   isMainTorch: 0

@@ -35,6 +35,15 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float climbSpeed = 2f;
     private bool isOnLadder = false;
 
+    [Header("Gezinme Ayarları")]
+    [SerializeField] private float wanderRadius = 5f;
+    [SerializeField] private float minWanderTime = 2f;
+    [SerializeField] private float maxWanderTime = 5f;
+    
+    private Vector2 wanderTarget;
+    private float nextWanderTime;
+    private Vector2 startPosition;
+
     private void Awake()
     {
         Debug.Log("Enemy Awake çağrıldı");
@@ -53,6 +62,8 @@ public class EnemyAI : MonoBehaviour
         var allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         Debug.Log($"Sahnede bulunan PlayerController sayısı: {allPlayers.Length}");
         UpdateNearestTorch();
+        startPosition = transform.position;
+        SetNewWanderTarget();
     }
 
     private void FixedUpdate()
@@ -114,11 +125,26 @@ public class EnemyAI : MonoBehaviour
             direction = (player.position - transform.position).normalized;
             Debug.Log($"Oyuncuya doğru hareket: {direction}");
         }
-        // Oyuncu menzilde değilse ve meşale varsa
+        // Sonra meşaleye bakıyoruz
         else if (torchDistance <= detectionRange)
         {
             direction = (nearestTorch.position - transform.position).normalized;
             Debug.Log($"Meşaleye doğru hareket: {direction}");
+        }
+        // Hiçbir hedef yoksa gezin
+        else
+        {
+            if (Time.time >= nextWanderTime)
+            {
+                SetNewWanderTarget();
+            }
+            
+            float distanceToTarget = Vector2.Distance(transform.position, wanderTarget);
+            if (distanceToTarget > 0.1f)
+            {
+                direction = (wanderTarget - (Vector2)transform.position).normalized;
+                Debug.Log($"Geziniyor: {direction}, Hedef: {wanderTarget}");
+            }
         }
         
         // Hareket kontrolü
@@ -129,7 +155,6 @@ public class EnemyAI : MonoBehaviour
         else
         {
             rb.linearVelocity = Vector2.zero;
-            Debug.Log("Hedef yok - Duruyorum");
         }
     }
 
@@ -269,5 +294,21 @@ public class EnemyAI : MonoBehaviour
             isOnLadder = false;
             Debug.Log("Düşman merdivenden çıktı");
         }
+    }
+
+    private void SetNewWanderTarget()
+    {
+        // Başlangıç pozisyonunun etrafında rastgele bir nokta seç
+        float randomAngle = Random.Range(0f, 360f);
+        float randomDistance = Random.Range(0f, wanderRadius);
+        Vector2 offset = new Vector2(
+            Mathf.Cos(randomAngle * Mathf.Deg2Rad) * randomDistance,
+            Mathf.Sin(randomAngle * Mathf.Deg2Rad) * randomDistance
+        );
+        
+        wanderTarget = startPosition + offset;
+        nextWanderTime = Time.time + Random.Range(minWanderTime, maxWanderTime);
+        
+        Debug.Log($"Yeni gezinme hedefi: {wanderTarget}, Süre: {nextWanderTime - Time.time}");
     }
 }
