@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip woodGatherSound;
     [SerializeField] private AudioClip torchSound;
     [SerializeField] private AudioClip treeCutSound;
+    private AudioSource audioSource;
 
     [Header("Merdiven Ayarları")]
     [SerializeField] private float climbSpeed = 3f;
@@ -40,21 +41,21 @@ public class PlayerController : MonoBehaviour
     private float gatherCooldown = 0.5f;
     private float treeCutCooldown = 1f;
 
+    [Header("Animasyon")]
     private Animator animator;
-    private AudioSource audioSource;
-    private Light2D torchLight;
-    private Vector2 lastMovementDirection = Vector2.down;
+    private SpriteRenderer spriteRenderer;
+    private Vector2 lastMovementDirection = Vector2.right; // Son hareket yönünü takip et
 
     private float currentSpeed;
     private bool isInLight = false;
     private UIManager uiManager;
 
-    private void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
-        torchLight = GetComponentInChildren<Light2D>();
         currentHealth = maxHealth;
         uiManager = FindAnyObjectByType<UIManager>();
     }
@@ -112,42 +113,23 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovementAndAnimation()
     {
-        Vector2 dir = Vector2.zero;
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
+        Vector2 movement = new Vector2(moveX, moveY).normalized;
 
-        // Yatay hareket (A/D veya Sol/Sağ Ok)
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        if (movement != Vector2.zero)
         {
-            dir.x = -1;
-            animator.SetInteger("Direction", 3); // Sol
+            lastMovementDirection = movement;
+            animator.SetBool("isMoving", true);
+            animator.SetFloat("moveX", movement.x);
+            animator.SetFloat("moveY", movement.y);
+            rb.linearVelocity = movement * currentSpeed;
         }
-        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        else
         {
-            dir.x = 1;
-            animator.SetInteger("Direction", 2); // Sağ
+            animator.SetBool("isMoving", false);
+            rb.linearVelocity = Vector2.zero;
         }
-
-        // Dikey hareket (W/S veya Yukarı/Aşağı Ok)
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            dir.y = 1;
-            animator.SetInteger("Direction", 1); // Yukarı
-        }
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            dir.y = -1;
-            animator.SetInteger("Direction", 0); // Aşağı
-        }
-        dir.Normalize();
-        animator.SetBool("IsMoving", dir.magnitude > 0);
-
-        // Son hareket yönünü kaydet
-        if (dir != Vector2.zero)
-        {
-            lastMovementDirection = dir;
-        }
-
-        // Hareketi uygula
-        rb.linearVelocity = dir * currentSpeed;
     }
 
     public void TakeDamage(float damage)
