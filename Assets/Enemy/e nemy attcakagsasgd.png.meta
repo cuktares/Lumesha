@@ -1,10 +1,25 @@
 fileFormatVersion: 2
-guid: cf76a4125047b5841910bcdb8d413553
+guid: bbe259b5affa2824a9ea3c423645c098
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 827538889749247048
-    second: attack_0
+      213: 8674722250069097555
+    second: e nemy attcakagsasgd_0
+  - first:
+      213: -3736368111682456861
+    second: e nemy attcakagsasgd_1
+  - first:
+      213: -4475061226446175313
+    second: e nemy attcakagsasgd_2
+  - first:
+      213: -163541172078657653
+    second: e nemy attcakagsasgd_3
+  - first:
+      213: -7442705143041502247
+    second: e nemy attcakagsasgd_4
+  - first:
+      213: -4271530770744380899
+    second: e nemy attcakagsasgd_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: attack_0
+      name: e nemy attcakagsasgd_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 84433595c320c7b00800000000000000
-      internalID: 827538889749247048
+      spriteID: 35cbb800dedc26870800000000000000
+      internalID: 8674722250069097555
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_1
+      name: e nemy attcakagsasgd_1
       rect:
         serializedVersion: 2
         x: 32
@@ -135,16 +150,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 2d4301be520d04148b50e2cfc90de2f8
-      internalID: -1139275485
+      spriteID: 3e2f111aff0c52cc0800000000000000
+      internalID: -3736368111682456861
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_2
+      name: e nemy attcakagsasgd_2
       rect:
         serializedVersion: 2
         x: 64
@@ -157,16 +172,16 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 1fb3b109032f9a749aef235a8210edb1
-      internalID: -1475879128
+      spriteID: fa34d81468365e1c0800000000000000
+      internalID: -4475061226446175313
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_3
+      name: e nemy attcakagsasgd_3
       rect:
         serializedVersion: 2
         x: 96
@@ -179,10 +194,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: a573996c9cef49346b0489c3ecb8f415
-      internalID: 344513755
+      spriteID: b8fb914ab2cfabdf0800000000000000
+      internalID: -163541172078657653
       vertices: []
       indices: 
       edges: []
@@ -191,7 +206,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4b44f9a9cc2295a4d94421935485d6ba
+    spriteID: efd90e1f65c22754daade15b413f1076
     internalID: 0
     vertices: []
     indices: 
@@ -201,10 +216,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      attack_0: 827538889749247048
-      attack_1: -1139275485
-      attack_2: -1475879128
-      attack_3: 344513755
+      e nemy attcakagsasgd_0: 8674722250069097555
+      e nemy attcakagsasgd_1: -3736368111682456861
+      e nemy attcakagsasgd_2: -4475061226446175313
+      e nemy attcakagsasgd_3: -163541172078657653
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
